@@ -10,11 +10,12 @@ public class King extends Piece{
     private Image pieceImage;
     private ImageView pieceImageView;
     int color; //black 0 white 1
+    int value;
     char pieceChar;
 
-    public King(int color, int gridSize, AnchorPane pane, char[][] board, ImageView[][] boardImg) {
-        super(1000, gridSize, pane, board, boardImg); // value
-
+    public King(int color, int gridSize, AnchorPane pane){
+        super(gridSize, pane);
+        this.value = 1000;
         //set color of the image
         if(color == 1){
             pieceImage = loadImage("img/kingW.png");

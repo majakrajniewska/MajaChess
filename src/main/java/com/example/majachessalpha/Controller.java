@@ -5,6 +5,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.layout.AnchorPane;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable{
@@ -22,6 +23,7 @@ public class Controller implements Initializable{
     //private GridBase gridBase;
     private GridHandler backgroundGridHandler;
     private PositionHandler positionHandler;
+    private Piece pieceHandler;
 
     private Player playerWhite;
     private Player playerBlack;
@@ -33,9 +35,16 @@ public class Controller implements Initializable{
         backgroundGridHandler = new GridHandler(gridSize, pane);
         backgroundGridHandler.updateGrid();
 
-        positionHandler = new PositionHandler(gridSize, pane, backgroundGridHandler.getBoard(),
-        backgroundGridHandler.getBoardImageViews());
+        positionHandler = new PositionHandler(
+                gridSize,
+                pane,
+                playerWhite.getPlayersPieces(),
+                playerBlack.getPlayersPieces());
+
+        //pieceHandler = new Piece(gridSize, pane, backgroundGridHandler.getBoard(), backgroundGridHandler.getBoardImageViews());
         positionHandler.setPosition(FEN);
+
+
 
    }
 }

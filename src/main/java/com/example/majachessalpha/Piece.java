@@ -9,22 +9,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Piece extends GridBase{
-    int value;
     double mouseAnchorX;
     double mouseAnchorY;
     int startX, startY;
     int currentX, currentY;
 
-    List<int[]> legalMoves;
+    List<int[]> legalMoves = new ArrayList<>();
 
-    char[][] charBoard;
-    ImageView[][] boardImageView;
-    public Piece(int value, int gridSize, AnchorPane anchorPane, char[][] board, ImageView[][] boardImg) {
+    static char[][] charBoard;
+    static ImageView[][] boardImageView;
+    private List<Piece> playerWhitePieces;
+    private List<Piece> playerBlackPieces;
+    public Piece(int gridSize, AnchorPane anchorPane){
         super(gridSize, anchorPane);
-        this.value = value;
-        this.charBoard = board;
-        this.boardImageView = boardImg;
-        this.legalMoves  = new ArrayList<>();
+        if(charBoard == null) charBoard = getBoard();
+        if(boardImageView == null) boardImageView = getBoardImageViews();
     }
 
     public Image loadImage(String path){
@@ -228,6 +227,7 @@ public abstract class Piece extends GridBase{
                 Character.isUpperCase(charBoard[currentX][currentY])));
     }
 
+
     //GENERATING LEGAL MOVES
     public boolean isValidSquare(int x, int y){
         return x >= 0 && x <= 7 && y >= 0 && y <= 7;
@@ -248,7 +248,14 @@ public abstract class Piece extends GridBase{
         }
         System.out.println();
     }
-
-    //generating legal moves
     public abstract List<int[]> generateLegalMoves();
+
+
+    //SET LIST OF PLAYERS PIECES
+    public void setPlayerWhitePieces(List<Piece> playerWhitePieces) {
+        this.playerWhitePieces = playerWhitePieces;
+    }
+    public void setPlayerBlackPieces(List<Piece> playerBlackPieces) {
+        this.playerBlackPieces = playerBlackPieces;
+    }
 }

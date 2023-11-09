@@ -6,23 +6,20 @@ import javafx.scene.layout.AnchorPane;
 public abstract class GridBase {
 
     //visualization
-    private double boardWidth; //640
     private int sqaresAmount = 8; //8 - constant
     private int allSqares = sqaresAmount*sqaresAmount;  //64 - constant
     private int gridSize;  //80
     private AnchorPane anchorPane;
 
     //char board
-    private char[][] board;
+    private static char[][] board = new char[8][8];
     //board with images
-    private ImageView[][] boardImageViews;
+    private static ImageView[][] boardImageViews = new ImageView[8][8];
 
+    public GridBase(){}
     public GridBase(int gridSize, AnchorPane anchorPane) {
-        this.boardWidth = gridSize*sqaresAmount;
         this.gridSize = gridSize;
         this.anchorPane = anchorPane;
-        this.board = new char[getSqaresAmount()][getSqaresAmount()];
-        this.boardImageViews = new ImageView[getSqaresAmount()][getSqaresAmount()];
     }
 
     public int getAllSqares() {

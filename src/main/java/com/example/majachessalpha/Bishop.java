@@ -10,10 +10,11 @@ public class Bishop extends Piece{
     private Image pieceImage;
     private ImageView pieceImageView;
     int color; //black 0 white 1
+    int value;
     char pieceChar;
-    public Bishop(int color, int gridSize, AnchorPane pane, char[][] board, ImageView[][] boardImg) {
-        super(3, gridSize, pane, board, boardImg); // value
-
+    public Bishop(int color, int gridSize, AnchorPane pane){
+        super(gridSize, pane);
+        this.value = 3;
         //set color of the image
         if(color == 1){
             pieceImage = loadImage("img/bishopW.png");

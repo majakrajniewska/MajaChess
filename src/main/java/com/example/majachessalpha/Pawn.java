@@ -11,12 +11,14 @@ public class Pawn extends Piece {
     private Image pieceImage;
     ImageView pieceImageView;
     int color; //black 0 white 1
+    int value;
     char pieceChar;
     boolean isFirstMove;
 
 
-    public Pawn(int color, int gridSize, AnchorPane pane, char [][] board, ImageView[][] boardImg) {
-        super(1, gridSize, pane, board, boardImg); // value
+    public Pawn(int color, int gridSize, AnchorPane pane){
+        super(gridSize, pane);
+        this.value = 1;
         isFirstMove = true;
         //set color of image
         if(color == 1){
@@ -83,18 +85,18 @@ public class Pawn extends Piece {
                 legalMoves.add(new int[]{startX, startY-2});
             if(isValidSquare(startX, startY-1) && isSquareEmpty(startX, startY-1))
                 legalMoves.add(new int[]{startX, startY-1});
-            if(isValidSquare(startX-1, startY-1) && isSquareOccupied(startX, startY-1, 1))
+            if(isValidSquare(startX-1, startY-1) && isSquareOccupied(startX-1, startY-1, 1))
                 legalMoves.add(new int[]{startX-1, startY-1});
-            if(isValidSquare(startX+1, startY-1) && isSquareOccupied(startX, startY-1, 1))
-                legalMoves.add(new int[]{startX-1, startY-1});
+            if(isValidSquare(startX+1, startY-1) && isSquareOccupied(startX+1, startY-1, 1))
+                legalMoves.add(new int[]{startX+1, startY-1});
         } else{
             if(isFirstMove && isSquareEmpty(startX, startY+1) && isSquareEmpty(startX, startY+2))
                 legalMoves.add(new int[]{startX, startY+2});
             if(isValidSquare(startX, startY+1) && isSquareEmpty(startX, startY+1))
                 legalMoves.add(new int[]{startX, startY+1});
-            if(isValidSquare(startX-1, startY+1) && isSquareOccupied(startX, startY+1, 0))
+            if(isValidSquare(startX-1, startY+1) && isSquareOccupied(startX-1, startY+1, 0))
                 legalMoves.add(new int[]{startX-1, startY+1});
-            if(isValidSquare(startX+1, startY+1) && isSquareOccupied(startX, startY+1, 0))
+            if(isValidSquare(startX+1, startY+1) && isSquareOccupied(startX+1, startY+1, 0))
                 legalMoves.add(new int[]{startX-1, startY+1});
         }
 
