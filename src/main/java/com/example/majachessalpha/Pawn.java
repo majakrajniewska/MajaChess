@@ -16,8 +16,7 @@ public class Pawn extends Piece {
     boolean isFirstMove;
 
 
-    public Pawn(int color, int gridSize, AnchorPane pane){
-        super(gridSize, pane);
+    public Pawn(int color){
         this.value = 1;
         isFirstMove = true;
         //set color of image

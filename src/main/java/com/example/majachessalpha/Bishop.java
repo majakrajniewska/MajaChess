@@ -12,8 +12,7 @@ public class Bishop extends Piece{
     int color; //black 0 white 1
     int value;
     char pieceChar;
-    public Bishop(int color, int gridSize, AnchorPane pane){
-        super(gridSize, pane);
+    public Bishop(int color){
         this.value = 3;
         //set color of the image
         if(color == 1){

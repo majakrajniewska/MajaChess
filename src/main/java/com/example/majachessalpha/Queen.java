@@ -13,8 +13,7 @@ public class Queen extends Piece{
     int value;
     char pieceChar;
 
-    public Queen(int color, int gridSize, AnchorPane pane){
-        super(gridSize, pane);
+    public Queen(int color){
         this.value = 9;
         //set color of the image
         if(color == 1){

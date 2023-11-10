@@ -1,5 +1,6 @@
 package com.example.majachessalpha;
 
+import javafx.fxml.FXML;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 
@@ -8,18 +9,17 @@ public abstract class GridBase {
     //visualization
     private int sqaresAmount = 8; //8 - constant
     private int allSqares = sqaresAmount*sqaresAmount;  //64 - constant
-    private int gridSize;  //80
-    private AnchorPane anchorPane;
+    private static int gridSize = 80;
 
+    AnchorPane pane;
     //char board
     private static char[][] board = new char[8][8];
     //board with images
     private static ImageView[][] boardImageViews = new ImageView[8][8];
 
     public GridBase(){}
-    public GridBase(int gridSize, AnchorPane anchorPane) {
-        this.gridSize = gridSize;
-        this.anchorPane = anchorPane;
+    public GridBase(AnchorPane pane){
+        this.pane = pane;
     }
 
     public int getAllSqares() {
@@ -35,7 +35,7 @@ public abstract class GridBase {
     }
 
     public AnchorPane getAnchorPane() {
-        return anchorPane;
+        return pane;
     }
 
     public char[][] getBoard() {

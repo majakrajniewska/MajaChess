@@ -5,8 +5,8 @@ import javafx.scene.shape.Rectangle;
 
 public class GridHandler extends GridBase {
 
-    public GridHandler(int gridSize, AnchorPane anchorPane) {
-        super(gridSize, anchorPane);
+    public GridHandler(AnchorPane pane) {
+        super(pane);
     }
 
     public void updateGrid() {

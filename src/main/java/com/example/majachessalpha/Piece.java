@@ -18,12 +18,13 @@ public abstract class Piece extends GridBase{
 
     static char[][] charBoard;
     static ImageView[][] boardImageView;
+    static AnchorPane pane;
     private List<Piece> playerWhitePieces;
     private List<Piece> playerBlackPieces;
-    public Piece(int gridSize, AnchorPane anchorPane){
-        super(gridSize, anchorPane);
+    public Piece(){
         if(charBoard == null) charBoard = getBoard();
         if(boardImageView == null) boardImageView = getBoardImageViews();
+        if(pane == null) pane = getAnchorPane();
     }
 
     public Image loadImage(String path){

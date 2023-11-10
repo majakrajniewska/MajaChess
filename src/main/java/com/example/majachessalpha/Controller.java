@@ -10,21 +10,12 @@ import java.util.ResourceBundle;
 
 public class Controller implements Initializable{
 
-    private int gridSize = 80;
     private String FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 
-    //test endgame position
-    //private String FEN = "8/5k2/8/8/8/8/8/5K1R";
-
-    //private char[][] charBoard = new char[8][8];
-    @FXML
-    private AnchorPane pane;
-
-    //private GridBase gridBase;
     private GridHandler backgroundGridHandler;
     private PositionHandler positionHandler;
-    private Piece pieceHandler;
-
+    @FXML
+    private AnchorPane pane;
     private Player playerWhite;
     private Player playerBlack;
 
@@ -32,11 +23,10 @@ public class Controller implements Initializable{
     public void initialize(URL url, ResourceBundle resourceBundle) {
         playerWhite = new Player(1);
         playerBlack = new Player(0);
-        backgroundGridHandler = new GridHandler(gridSize, pane);
+        backgroundGridHandler = new GridHandler(pane);
         backgroundGridHandler.updateGrid();
 
         positionHandler = new PositionHandler(
-                gridSize,
                 pane,
                 playerWhite.getPlayersPieces(),
                 playerBlack.getPlayersPieces());

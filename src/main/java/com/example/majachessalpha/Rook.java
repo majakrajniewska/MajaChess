@@ -13,8 +13,7 @@ public class Rook extends Piece {
     int value;
     char pieceChar;
 
-    public Rook(int color, int gridSize, AnchorPane pane){
-        super(gridSize, pane);
+    public Rook(int color){
         this.value = 5;
         //set color of the image
         if(color == 1){

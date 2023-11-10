@@ -13,8 +13,7 @@ public class King extends Piece{
     int value;
     char pieceChar;
 
-    public King(int color, int gridSize, AnchorPane pane){
-        super(gridSize, pane);
+    public King(int color){
         this.value = 1000;
         //set color of the image
         if(color == 1){
