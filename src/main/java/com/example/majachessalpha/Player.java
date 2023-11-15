@@ -5,16 +5,16 @@ import java.util.List;
 
 public class Player {
     int color;
-    List<Piece> playersPieces;
+    List<Piece> playerPieces;
     Player(int color){
         this.color = color;
-        playersPieces = new ArrayList<>();
+        playerPieces = new ArrayList<>();
     }
 
-    List<Piece> getPlayersPieces(){
-        return playersPieces;
+    List<Piece> getPlayerPieces(){
+        return playerPieces;
     }
-    void addPieceToPlayeresPieces(Piece piece){
-        playersPieces.add(piece);
+    void addPieceToPlayerePieces(Piece piece){
+        playerPieces.add(piece);
     }
 }

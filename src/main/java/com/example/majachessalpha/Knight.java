@@ -23,7 +23,8 @@ public class Knight extends Piece {
             {-2, 1},
             {-2, -1}
     };
-    public Knight(int color){
+    public Knight(int color, AnchorPane pane){
+        super(pane);
         this.value = 3;
         //set color of the image
         if(color == 1){

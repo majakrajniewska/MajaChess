@@ -16,25 +16,16 @@ public class Controller implements Initializable{
     private PositionHandler positionHandler;
     @FXML
     private AnchorPane pane;
-    private Player playerWhite;
-    private Player playerBlack;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        playerWhite = new Player(1);
-        playerBlack = new Player(0);
         backgroundGridHandler = new GridHandler(pane);
         backgroundGridHandler.updateGrid();
 
-        positionHandler = new PositionHandler(
-                pane,
-                playerWhite.getPlayersPieces(),
-                playerBlack.getPlayersPieces());
+        positionHandler = new PositionHandler(pane);
 
         //pieceHandler = new Piece(gridSize, pane, backgroundGridHandler.getBoard(), backgroundGridHandler.getBoardImageViews());
         positionHandler.setPosition(FEN);
-
-
 
    }
 }

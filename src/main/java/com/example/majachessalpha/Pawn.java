@@ -16,7 +16,8 @@ public class Pawn extends Piece {
     boolean isFirstMove;
 
 
-    public Pawn(int color){
+    public Pawn(int color, AnchorPane pane){
+        super(pane);
         this.value = 1;
         isFirstMove = true;
         //set color of image
@@ -34,6 +35,7 @@ public class Pawn extends Piece {
         pieceImageView = prepareImage(pieceImage);
         }
 
+    @Override
     public ImageView getPieceImage() {
         return pieceImageView;
     }
@@ -61,7 +63,7 @@ public class Pawn extends Piece {
                 return true;
             } else return false;
         } else {
-            if(currentY == startY+1 && isHorizontal() && isSquareEmpty(currentX, currentY)){
+            if(currentY == startY + 1 && isHorizontal() && isSquareEmpty(currentX, currentY)){
                 isFirstMove = false;
                 return true;
             }

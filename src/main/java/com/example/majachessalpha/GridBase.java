@@ -4,7 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 
-public abstract class GridBase {
+public abstract class GridBase extends GameHandler{
 
     //visualization
     private int sqaresAmount = 8; //8 - constant
