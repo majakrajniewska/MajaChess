@@ -44,7 +44,9 @@ public class Queen extends Piece{
     public char getPieceChar(){
         return pieceChar;
     }
-
+    public int getPieceColor() {
+        return color;
+    }
     @Override
     public List<int[]> generateLegalMoves() {
         legalMoves.clear();
@@ -61,12 +63,46 @@ public class Queen extends Piece{
             int y = startY + dy;
 
             while (isValidSquare(x, y)) {
+
                 if (isSquareEmpty(x, y)) {
                     legalMoves.add(new int[]{x, y});
                 } else if (isSquareOccupied(x, y, color)) {
                     legalMoves.add(new int[]{x, y});  // Can capture opponent's piece.
                     break;  // No need to check further in this direction.
                 } else {
+                    break;  // Friendly piece blocking the way.
+                }
+
+                x += dx;
+                y += dy;
+            }
+        }
+
+        return legalMoves;
+    }
+    @Override
+    public List<int[]> generateLegalMovesWithCheck() {
+        legalMoves.clear();
+
+        int[][] directions = {
+                {-1, 0}, {1, 0}, {0, -1}, {0, 1},  // Horizontal and vertical
+                {-1, -1}, {-1, 1}, {1, -1}, {1, 1}  // Diagonals
+        };
+
+        for (int[] direction : directions) {
+            int dx = direction[0];
+            int dy = direction[1];
+            int x = startX + dx;
+            int y = startY + dy;
+
+            while (isValidSquare(x, y)) {
+                if (isSquareEmpty(x, y) && isValidMoveWithCheck(x, y)) {
+                    legalMoves.add(new int[]{x, y});
+                } else if (isSquareOccupied(x, y, color) && isValidMoveWithCheck(x, y)) {
+                    legalMoves.add(new int[]{x, y});  // Can capture opponent's piece.
+                    break;  // No need to check further in this direction.
+                }else if(isSquareEmpty(x, y) && !isValidMoveWithCheck()){} //if square is empty, but there is check - keep going
+                else {
                     break;  // Friendly piece blocking the way.
                 }
 

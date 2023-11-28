@@ -56,6 +56,9 @@ public class King extends Piece{
     public char getPieceChar(){
         return pieceChar;
     }
+    public int getPieceColor() {
+        return color;
+    }
     @Override
     public List<int[]> generateLegalMoves() {
         legalMoves.clear();
@@ -65,6 +68,21 @@ public class King extends Piece{
             int y = startY - move[1];
 
             if (isValidSquare(x, y) && (isSquareEmpty(x, y) || isSquareOccupied(x, y, color))){
+                legalMoves.add(new int[]{x, y});
+            }
+
+        }
+        return legalMoves;
+    }
+    @Override
+    public List<int[]> generateLegalMovesWithCheck() {
+        legalMoves.clear();
+
+        for (int[] move : movement) {
+            int x = startX - move[0];
+            int y = startY - move[1];
+
+            if (isValidSquare(x, y) && isValidMoveWithCheck(x, y) && (isSquareEmpty(x, y) || isSquareOccupied(x, y, color))){
                 legalMoves.add(new int[]{x, y});
             }
         }

@@ -59,6 +59,9 @@ public class Knight extends Piece {
     public char getPieceChar(){
         return pieceChar;
     }
+    public int getPieceColor() {
+        return color;
+    }
 
     @Override
     public List<int[]> generateLegalMoves() {
@@ -69,8 +72,22 @@ public class Knight extends Piece {
             int y = startY - move[1];
 
             if (isValidSquare(x, y) && (isSquareEmpty(x, y) || isSquareOccupied(x, y, color))){
-                    legalMoves.add(new int[]{x, y});
+                legalMoves.add(new int[]{x, y});
             }
+        }
+        return legalMoves;
+    }
+
+    @Override
+    public List<int[]> generateLegalMovesWithCheck() {
+        legalMoves.clear();
+
+        for (int[] move : movement) {
+            int x = startX - move[0];
+            int y = startY - move[1];
+
+            if(isValidSquare(x, y) && (isSquareEmpty(x, y) || isSquareOccupied(x, y, color)) && isValidMoveWithCheck(x, y))
+                legalMoves.add(new int[] {x, y});
         }
         return legalMoves;
     }
