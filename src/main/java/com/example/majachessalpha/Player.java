@@ -14,7 +14,4 @@ public class Player {
     List<Piece> getPlayerPieces(){
         return playerPieces;
     }
-    void addPieceToPlayerePieces(Piece piece){
-        playerPieces.add(piece);
-    }
 }

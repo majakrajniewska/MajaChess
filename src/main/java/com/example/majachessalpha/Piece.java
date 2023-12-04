@@ -9,8 +9,6 @@ import java.net.URL;
 import java.util.*;
 
 public abstract class Piece extends GridBase{
-    //TODO
-    //MATE
     double mouseAnchorX;
     double mouseAnchorY;
     int startX, startY;
@@ -89,8 +87,8 @@ public abstract class Piece extends GridBase{
                 if(!stackRemovedPiece.isEmpty()){
                     getAnchorPane().getChildren().remove(stackRemovedPiece.pop().getPieceImage());
                 }
-                if(isMate()) mate();
                 setStartCoordinates(currentX, currentY);
+                if(isMate()) mate();
             } else {
                 setImageSquare(pieceImageView, this.startX, this.startY);
             }
@@ -113,13 +111,7 @@ public abstract class Piece extends GridBase{
                 switchKingCoordinates(startX, startY);
 
                 //if illegal capture has been made - add captured piece back
-                if (!stackRemovedPiece.isEmpty()) {
-                    Piece lastRemoved = stackRemovedPiece.pop();
-                    if (Character.isUpperCase(lastRemoved.getPieceChar()))
-                        playerWhitePieces.add(lastRemoved);
-                    else if (Character.isLowerCase(lastRemoved.getPieceChar()))
-                        playerBlackPieces.add(lastRemoved);
-                }
+                addDeletedPieceBack();
                 return false;
             }
             return true;
@@ -163,15 +155,8 @@ public abstract class Piece extends GridBase{
         //updating char board
         charBoard[startX][startY] = '.';
         charBoard[currentX][currentY] = getPieceChar();
-
         //if king has been moved - change its coordinates
-        if(getPieceChar()=='K'){
-            whiteKingCoordinates[0] = currentX;
-            whiteKingCoordinates[1] = currentY;
-        } else if(getPieceChar()=='k'){
-            blackKingCoordinates[0] = currentX;
-            blackKingCoordinates[1] = currentY;
-        }
+        switchKingCoordinates(currentX, currentY);
     }
     public void makeMove(int x, int y){
         //updating char board
@@ -244,7 +229,6 @@ public abstract class Piece extends GridBase{
         }
         return null;
     }
-
     public Piece capture(int x, int y){
         if(Character.isUpperCase(charBoard[startX][startY]) &&
             Character.isLowerCase(charBoard[x][y])){
@@ -268,7 +252,6 @@ public abstract class Piece extends GridBase{
     }
 
     //MOVEMENT VALIDATION
-    //check if move...
     public boolean isHorizontal(){
         return startY != currentY && startX == currentX;
     }
@@ -403,13 +386,21 @@ public abstract class Piece extends GridBase{
     public boolean isMate(){
         if(getPieceColor() == 1){
             for(Piece p : playerBlackPieces){
-                if(!p.generateLegalMoves().isEmpty()) return false;
+                if(!(p.generateLegalMovesWithCheck().isEmpty())){
+                    System.out.println(p.getPieceChar());
+                    p.printLegalMoves();
+                    return false;
+                }
             }
         } else {
             for(Piece p : playerWhitePieces){
-                if(!p.generateLegalMoves().isEmpty()) return false;
+                if(!(p.generateLegalMovesWithCheck().isEmpty())){
+                    System.out.println(p.getPieceChar());
+                    return false;
+                }
             }
         }
+        System.out.println("MATE");
         return true;
     }
     public void mate(){
@@ -418,8 +409,10 @@ public abstract class Piece extends GridBase{
         alert.setHeaderText(null); // Set to null to remove header text
         if(getPieceColor() == 1){
             alert.setContentText("Białe wygrały ez");
+            System.out.println("White won");
         } else{
             alert.setContentText("Czarne wygrały ez");
+            System.out.println("Black won");
         }
         alert.showAndWait();
     }
