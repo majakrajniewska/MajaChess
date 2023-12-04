@@ -23,8 +23,6 @@ public class Controller implements Initializable{
         backgroundGridHandler.updateGrid();
 
         positionHandler = new PositionHandler(pane);
-
-        //pieceHandler = new Piece(gridSize, pane, backgroundGridHandler.getBoard(), backgroundGridHandler.getBoardImageViews());
         positionHandler.setPosition(FEN);
 
    }

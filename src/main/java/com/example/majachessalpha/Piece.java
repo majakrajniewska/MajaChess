@@ -83,16 +83,30 @@ public abstract class Piece extends GridBase{
         //validate new coordinates
         pieceImageView.setOnMouseReleased(mouseEvent -> {
             //if move is valid - make move
-            if(isValidMoveWithCheck()){
-                if(!stackRemovedPiece.isEmpty()){
-                    getAnchorPane().getChildren().remove(stackRemovedPiece.pop().getPieceImage());
+            if(isPlayerTurn()){
+                if(isValidMoveWithCheck()){
+                    if(!stackRemovedPiece.isEmpty()){
+                        getAnchorPane().getChildren().remove(stackRemovedPiece.pop().getPieceImage());
+                    }
+                    setStartCoordinates(currentX, currentY);
+                    if(isMate()) mate();
+                    nextPlayersTurn();
+                }else {
+                    setImageSquare(pieceImageView, this.startX, this.startY);
                 }
-                setStartCoordinates(currentX, currentY);
-                if(isMate()) mate();
-            } else {
+            }
+             else {
                 setImageSquare(pieceImageView, this.startX, this.startY);
             }
         });
+    }
+    //turn
+    boolean isPlayerTurn(){
+        if(getPieceColor()==1 && playerWhite.isPlayerTurn())
+            return true;
+        else if(getPieceColor()==0 && playerBlack.isPlayerTurn())
+            return true;
+        return false;
     }
 
     //abstract validation function
