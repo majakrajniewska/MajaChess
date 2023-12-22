@@ -12,6 +12,7 @@ public class King extends Piece{
     int color; //black 0 white 1
     int value;
     char pieceChar;
+    boolean isFirstMove;
 
     public King(int color, AnchorPane pane){
         super(pane);
@@ -26,7 +27,7 @@ public class King extends Piece{
             this.color = 0;
             this.pieceChar = 'k';
         }
-
+        isFirstMove = true;
         //resize and make the image draggable
         pieceImageView = prepareImage(pieceImage);
     }
@@ -50,7 +51,15 @@ public class King extends Piece{
     public boolean isValidMove(){
         int deltaX = Math.abs(startX - currentX);
         int deltaY = Math.abs(startY - currentY);
-        return (deltaX + deltaY <= 1 || deltaX <= 1 && deltaY <= 1) && isSquareAvailable();
+        if ((deltaX + deltaY <= 1 || deltaX <= 1 && deltaY <= 1) && isSquareAvailable()){
+            isFirstMove = false;
+            return true;
+        }
+        if(isValidCastle(currentX)){
+            isFirstMove = false;
+            return true;
+        }
+        return false;
     }
     @Override
     public char getPieceChar(){
@@ -86,6 +95,103 @@ public class King extends Piece{
                 legalMoves.add(new int[]{x, y});
             }
         }
+        if(isValidCastle(startX-2)) legalMoves.add(new int[]{startX-2, startY});
+        if(isValidCastle(startX+2)) legalMoves.add(new int[]{startX+2, startY});
         return legalMoves;
+    }
+
+    //targetX: startX-2 or startX+2
+    public boolean isValidCastle(int targetX){
+        if(isFirstMove){
+            if(targetX == startX-2){
+                //player black
+                if(startY == 0){
+                    for(Rook rook : getPlayerBlackRooks()){
+                        if(rook.startX == startX-4) {
+                            return rook.isFirstMove() &&
+                                    !isPieceBetweenRookAndKing(startX - 4) &&
+                                    !isCheckWhileCastle();
+                        }
+                    }
+                }
+                //player white
+                else if(startY == 7){
+                    for(Rook rook : getPlayerWhiteRooks()){
+                        if(rook.startX == startX-4) {
+                            return rook.isFirstMove() &&
+                                    !isPieceBetweenRookAndKing(startX - 4) &&
+                                    !isCheckWhileCastle();
+                        }
+                    }
+                }
+            }
+            else if(targetX == startX + 2){
+                //player black
+                if(startY == 0){
+                    for(Rook rook : getPlayerBlackRooks()){
+                            return rook.isFirstMove() &&
+                                !isPieceBetweenRookAndKing(startX+3) &&
+                                !isCheckWhileCastle();
+                    }
+                }
+                //player white
+                else if(startY == 7){
+                    for(Rook rook : getPlayerWhiteRooks()){
+                        if(rook.startX == startX+3) {
+                            return rook.isFirstMove() &&
+                                    !isPieceBetweenRookAndKing(startX + 3) &&
+                                    !isCheckWhileCastle();
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean isPieceBetweenRookAndKing(int rookX){
+        if(startX < rookX) {
+            for (int i = startX+1; i < rookX; i++)
+                if (charBoard[i][startY] != '.') return true;
+        }
+        else {
+            for (int i = rookX+1; i < startX; i++)
+                if (charBoard[i][startY] != '.') return true;
+        }
+        return false;
+    }
+
+    public boolean isCheckWhileCastle(){    
+        if(color == 1){
+            if(startX < currentX)
+                return loopPiecesBlack(startX, currentX);
+            else
+                return loopPiecesBlack(currentX, startX);
+        } else{
+            if(startX < currentX)
+                return loopPiecesWhite(startX, currentX);
+            else
+                return loopPiecesWhite(currentX, startX);
+        }
+    }
+    public boolean loopPiecesWhite(int start, int end){
+        for(int x = start; x <= end; x++){
+            for(Piece p : getPlayerWhitePieces()) {
+                for (int[] move : p.generateLegalMoves()) {
+                    if (move[0] == x && move[1] == blackKingCoordinates[1]) return true;
+                }
+            }
+        }
+        return false;
+    }
+    public boolean loopPiecesBlack(int start, int end){
+        for(int x = start; x <= end; x++){
+            for(Piece p : getPlayerBlackPieces()) {
+                for (int[] move : p.generateLegalMoves()) {
+                    if (move[0] == x && move[1] == whiteKingCoordinates[1]) return true;
+                }
+            }
+        }
+        return false;
     }
 }

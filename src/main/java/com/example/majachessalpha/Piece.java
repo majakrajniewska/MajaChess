@@ -84,7 +84,17 @@ public abstract class Piece extends GridBase{
         pieceImageView.setOnMouseReleased(mouseEvent -> {
             //if move is valid - make move
             if(isPlayerTurn()){
-                if(isValidMoveWithCheck()){
+                if(canCastle()){
+                    setImageSquare(pieceImageView, this.currentX, this.currentY);
+//                    Rook tempRook = castleAndReturnRook();
+//                    if(this.currentX == 2)
+//                        setImageSquare(tempRook.getPieceImage(), this.currentX + 1, this.currentY);
+//                    else
+//                        setImageSquare(tempRook.getPieceImage(), this.currentX - 1, this.currentY);
+                    castle();
+                    nextPlayersTurn();
+                }
+                else if(isValidMoveWithCheck()){
                     if(!stackRemovedPiece.isEmpty()){
                         getAnchorPane().getChildren().remove(stackRemovedPiece.pop().getPieceImage());
                     }
@@ -104,9 +114,7 @@ public abstract class Piece extends GridBase{
     boolean isPlayerTurn(){
         if(getPieceColor()==1 && playerWhite.isPlayerTurn())
             return true;
-        else if(getPieceColor()==0 && playerBlack.isPlayerTurn())
-            return true;
-        return false;
+        else return getPieceColor() == 0 && playerBlack.isPlayerTurn();
     }
 
     //abstract validation function
@@ -120,10 +128,8 @@ public abstract class Piece extends GridBase{
 
             if(isCheck(previousCharBoard)) {
                 copyCharBoard(previousCharBoard, charBoard);
-
                 //if king did illegal move - set coordinates to previous ones
                 switchKingCoordinates(startX, startY);
-
                 //if illegal capture has been made - add captured piece back
                 addDeletedPieceBack();
                 return false;
@@ -430,13 +436,58 @@ public abstract class Piece extends GridBase{
         }
         alert.showAndWait();
     }
-
-    //BOARD IMPLEMENTATION
+    //CASTLE FUNCTIONALITY
+    public boolean canCastle(){
+        return isValidMove() &&
+                (getPieceChar() == 'k' || getPieceChar() == 'K') &&
+                (currentX == startX - 2 || currentX == startX + 2);
+    }
+    public void castle(){
+        //switch king and rook (charboard & GUI)
+        if(getPieceColor() == 0){
+            if(currentX < startX){
+                switchKingAndRookBlack(startX - 4, startX - 1);
+            } else{
+                switchKingAndRookBlack(startX + 3, startX + 1);
+            }
+        } else{
+            if(currentX < startX){
+                switchKingAndRookWhite(startX - 4, startX - 1);
+            } else{
+                switchKingAndRookWhite(startX + 3, startX + 1);
+            }
+        }
+    }
+    public void switchKingAndRookWhite(int startRookX, int newRookX){
+        for(Rook rook:getPlayerWhiteRooks()){
+            if(rook.startX == startRookX){
+                charBoard[rook.startX][rook.startY] = '.';
+                charBoard[newRookX][rook.startY] = 'R';
+                charBoard[startX][startY] = '.';
+                charBoard[currentX][currentY] = 'K';
+                rook.startX = newRookX;
+                switchKingCoordinates(currentX, currentY);
+                setImageSquare(rook.getPieceImage(), newRookX, this.currentY);
+            }
+        }
+    }
+    public void switchKingAndRookBlack(int startRookX, int newRookX){
+        for(Rook rook:getPlayerBlackRooks()){
+            if(rook.startX == startRookX){
+                charBoard[rook.startX][rook.startY] = '.';
+                charBoard[newRookX][rook.startY] = 'r';
+                charBoard[startX][startY] = '.';
+                charBoard[currentX][currentY] = 'k';
+                rook.startX = newRookX;
+                switchKingCoordinates(currentX, currentY);
+                setImageSquare(rook.getPieceImage(), newRookX, this.currentY);
+            }
+        }
+    }
+    //BOARD FUNCTIONALITY
     void copyCharBoard(char[][] boardFrom, char[][] boardTo){
         for(int i = 0; i<boardFrom.length; i++)
-            for(int j = 0; j<boardFrom[0].length; j++){
-                boardTo[i][j] = boardFrom[i][j];
-            }
+            System.arraycopy(boardFrom[i], 0, boardTo[i], 0, boardFrom[0].length);
     }
 
 }

@@ -10,6 +10,9 @@ public class PositionHandler extends GridBase{
     private static ImageView[][] boardImageView;
     private static List<Piece> playerWhitePieces;
     private static List<Piece> playerBlackPieces;
+    //for castle
+    private static List<Rook> playerWhiteRooks;
+    private static List<Rook> playerBlackRooks;
     private static int[] whiteKingCoordinates;
     private static int[] blackKingCoordinates;
 
@@ -21,6 +24,10 @@ public class PositionHandler extends GridBase{
         if(playerWhitePieces == null) playerWhitePieces = getPlayerWhitePieces();
         if(whiteKingCoordinates == null) whiteKingCoordinates = getWhiteKingCoordinates();
         if(blackKingCoordinates == null) blackKingCoordinates = getBlackKingCoordinates();
+
+        //for castle
+        if(playerBlackRooks == null) playerBlackRooks = getPlayerBlackRooks();
+        if(playerWhiteRooks == null) playerWhiteRooks = getPlayerWhiteRooks();
     }
 
     public void setPosition(String fen){
@@ -39,12 +46,14 @@ public class PositionHandler extends GridBase{
                         setPieceGraphic(piece.getPieceImage(), getAnchorPane(), square, fen.charAt(i), piece);
                         square+=1;
                         playerBlackPieces.add(piece);
+                        playerBlackRooks.add(piece);
                     }
                     case 'R' -> {
                         Rook piece = new Rook(1, pane);
                         setPieceGraphic(piece.getPieceImage(), getAnchorPane(), square, fen.charAt(i), piece);
                         square+=1;
                         playerWhitePieces.add(piece);
+                        playerWhiteRooks.add(piece);
                     }
                     case 'n' -> {
                         Knight piece = new Knight(0, pane);

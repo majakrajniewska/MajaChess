@@ -16,15 +16,20 @@ public class GameHandler {
     public List<Piece> getPlayerWhitePieces() {
         return playerWhite.getPlayerPieces();
     }
-
     public List<Piece> getPlayerBlackPieces() {
         return playerBlack.getPlayerPieces();
+    }
+
+    public List<Rook> getPlayerWhiteRooks() {
+        return playerWhite.getPlayerRooks();
+    }
+    public List<Rook> getPlayerBlackRooks() {
+        return playerBlack.getPlayerRooks();
     }
 
     public static int[] getWhiteKingCoordinates() {
         return whiteKingCoordinates;
     }
-
     public static int[] getBlackKingCoordinates() {
         return blackKingCoordinates;
     }

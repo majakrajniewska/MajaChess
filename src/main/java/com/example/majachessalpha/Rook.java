@@ -12,6 +12,7 @@ public class Rook extends Piece {
     int color; //black 0 white 1
     int value;
     char pieceChar;
+    private boolean isFirstMove; //for castle
 
     public Rook(int color, AnchorPane pane){
         super(pane);
@@ -26,7 +27,7 @@ public class Rook extends Piece {
             this.color = 0;
             pieceChar = 'r';
         }
-
+        isFirstMove = true;
         //resize and make the image draggable
         pieceImageView = prepareImage(pieceImage);
     }
@@ -38,7 +39,11 @@ public class Rook extends Piece {
     //Validating the move
     @Override
     public boolean isValidMove(){
-        return (isHorizontal() || isVertical()) && isNotBlocked();
+        if((isHorizontal() || isVertical()) && isNotBlocked()){
+            isFirstMove = false;
+            return true;
+        }
+        return false;
     }
     @Override
     public char getPieceChar(){
@@ -46,6 +51,9 @@ public class Rook extends Piece {
     }
     public int getPieceColor() {
         return color;
+    }
+    public boolean isFirstMove(){
+        return isFirstMove;
     }
 
     @Override

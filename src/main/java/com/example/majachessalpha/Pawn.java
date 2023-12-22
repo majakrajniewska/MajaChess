@@ -13,8 +13,6 @@ public class Pawn extends Piece {
     int color; //black 0 white 1
     int value;
     char pieceChar;
-    boolean isFirstMove;
-
 
     public Pawn(int color, AnchorPane pane){
         super(pane);
@@ -45,7 +43,6 @@ public class Pawn extends Piece {
         //allowing to go 2 squares in the first move
         if(isFirstMove()){
             if(isHorizontal() && Math.abs(startY - currentY)==2 && isNotBlocked()){
-                isFirstMove = false;
                 return true;
             }
         }
@@ -95,7 +92,7 @@ public class Pawn extends Piece {
             if(isValidSquare(startX-1, startY+1) && isSquareOccupied(startX-1, startY+1, 0))
                 legalMoves.add(new int[]{startX-1, startY+1});
             if(isValidSquare(startX+1, startY+1) && isSquareOccupied(startX+1, startY+1, 0))
-                legalMoves.add(new int[]{startX-1, startY+1});
+                legalMoves.add(new int[]{startX+1, startY+1});
         }
 
         return legalMoves;
