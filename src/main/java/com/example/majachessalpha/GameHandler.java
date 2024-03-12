@@ -5,7 +5,6 @@ import java.util.List;
 public class GameHandler {
     static Player playerWhite;
     static Player playerBlack;
-
     static int[] whiteKingCoordinates = new int[2];
     static int[] blackKingCoordinates = new int[2];
     GameHandler(){
@@ -20,6 +19,7 @@ public class GameHandler {
         return playerBlack.getPlayerPieces();
     }
 
+    //for castle
     public List<Rook> getPlayerWhiteRooks() {
         return playerWhite.getPlayerRooks();
     }

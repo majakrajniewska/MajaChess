@@ -50,12 +50,16 @@ public class Pawn extends Piece {
         if(color == 1){
             if(currentY == startY-1 && isHorizontal() && isSquareEmpty(currentX, currentY)){
                 return true;
+            } else if (canDoUnPassant() && currentY == 2 && (currentX == startX-1 || currentX == startX+1)){
+                return true;
             }
             else return ((currentX == startX - 1 && currentY == startY - 1) ||
                     (currentX == startX + 1 && currentY == startY - 1)) &&
                     (canCapture());
         } else {
             if(currentY == startY + 1 && isHorizontal() && isSquareEmpty(currentX, currentY)){
+                return true;
+            }else if (canDoUnPassant() && currentY == 5 && (currentX == startX-1 || currentX == startX+1)){
                 return true;
             }
             else return (currentX == startX - 1 && currentY == startY + 1) ||
@@ -84,6 +88,8 @@ public class Pawn extends Piece {
                 legalMoves.add(new int[]{startX-1, startY-1});
             if(isValidSquare(startX+1, startY-1) && isSquareOccupied(startX+1, startY-1, 1))
                 legalMoves.add(new int[]{startX+1, startY-1});
+            if(canDoUnPassantLeft()) legalMoves.add(new int[]{startX-1, startY-1});
+            if(canDoUnPassantRight()) legalMoves.add(new int[]{startX+1, startY-1});
         } else{
             if(isFirstMove() && isSquareEmpty(startX, startY+1) && isSquareEmpty(startX, startY+2))
                 legalMoves.add(new int[]{startX, startY+2});
@@ -93,11 +99,14 @@ public class Pawn extends Piece {
                 legalMoves.add(new int[]{startX-1, startY+1});
             if(isValidSquare(startX+1, startY+1) && isSquareOccupied(startX+1, startY+1, 0))
                 legalMoves.add(new int[]{startX+1, startY+1});
+            if(canDoUnPassantLeft()) legalMoves.add(new int[]{startX-1, startY+1});
+            if(canDoUnPassantRight()) legalMoves.add(new int[]{startX+1, startY+1});
         }
 
         return legalMoves;
     }
 
+    //doesn't have un passant yet
     public List<int[]> generateLegalMovesWithCheck() {
         legalMoves.clear();
         if(color == 1){
@@ -132,5 +141,38 @@ public class Pawn extends Piece {
         else
             return startY == 1;
     }
-
+    public boolean canDoUnPassant(){
+        if(color==1 && startY==3){
+            Move lastMove = getLastMove();
+            Piece lastMovedPiece = lastMove.getPiece();
+            return (lastMovedPiece.getPieceChar() == 'p') &&
+                    (lastMovedPiece.currentY == 3) &&
+                    (lastMovedPiece.currentX == this.currentX - 1 || lastMovedPiece.currentX == this.currentX + 1) &&
+                    (lastMovedPiece.startY == 1);
+        } else if(color==0 && startY==4){
+            Move lastMove = getLastMove();
+            Piece lastMovedPiece = lastMove.getPiece();
+            return (lastMovedPiece.getPieceChar() == 'P') &&
+                    (lastMovedPiece.currentY == 4) &&
+                    (lastMovedPiece.currentX == this.currentX - 1 || lastMovedPiece.currentX == this.currentX + 1) &&
+                    (lastMovedPiece.startY == 6);
+        }
+        return false;
+    }
+    public boolean canDoUnPassantLeft(){
+        if(canDoUnPassant()){
+            Move lastMove = getLastMove();
+            Piece lastMovedPiece = lastMove.getPiece();
+            return lastMovedPiece.currentX == this.currentX - 1;
+        }
+        return false;
+    }
+    public boolean canDoUnPassantRight(){
+        if(canDoUnPassant()){
+            Move lastMove = getLastMove();
+            Piece lastMovedPiece = lastMove.getPiece();
+            return lastMovedPiece.currentX == this.currentX + 1;
+        }
+        return false;
+    }
 }

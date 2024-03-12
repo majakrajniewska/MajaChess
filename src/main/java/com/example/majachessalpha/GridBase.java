@@ -7,8 +7,8 @@ import javafx.scene.layout.AnchorPane;
 public abstract class GridBase extends GameHandler{
 
     //visualization
-    private int sqaresAmount = 8; //8 - constant
-    private int allSqares = sqaresAmount*sqaresAmount;  //64 - constant
+    private int squaresAmount = 8; //8 - constant
+    private int allSquares = squaresAmount*squaresAmount;  //64 - constant
     private static int gridSize = 80;
 
     AnchorPane pane;
@@ -22,12 +22,12 @@ public abstract class GridBase extends GameHandler{
         this.pane = pane;
     }
 
-    public int getAllSqares() {
-        return allSqares;
+    public int getAllSquares() {
+        return allSquares;
     }
 
-    public int getSqaresAmount() {
-        return sqaresAmount;
+    public int getSquaresAmount() {
+        return squaresAmount;
     }
 
     public int getGridSize() {

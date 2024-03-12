@@ -7,11 +7,13 @@ import javafx.scene.layout.AnchorPane;
 
 import java.net.URL;
 import java.util.*;
-
+//UNPASSANT DZIALA TYLKO CZARNY W LEWO I NIE USUWA BIALEGO PIONKA
 public abstract class Piece extends GridBase{
     double mouseAnchorX;
     double mouseAnchorY;
+    //coordinates from which piece starts its move
     int startX, startY;
+    //coordinates where piece ends its move (if its possible)
     int currentX, currentY;
 
     //saving last removed piece
@@ -25,6 +27,9 @@ public abstract class Piece extends GridBase{
     static char[][] previousCharBoard = new char[8][8];
     private static List<Piece> playerWhitePieces;
     private static List<Piece> playerBlackPieces;
+    //we need to have 50 last moves to check if its a tie and if un passant is legal
+    private static Vector<Move> historyOfMoves = new Vector<>();
+
     public Piece(AnchorPane pane){
         super(pane);
         if(charBoard == null) charBoard = getBoard();
@@ -62,11 +67,8 @@ public abstract class Piece extends GridBase{
             mouseAnchorY = mouseEvent.getSceneY();
 
             //board[x/80][y/80]
-            startX = (int) ((mouseAnchorX/getGridSize()) % getSqaresAmount());
-            startY = (int) ((mouseAnchorY/getGridSize()) % getSqaresAmount());
-
-            legalMoves = generateLegalMovesWithCheck();
-            printLegalMoves();
+            startX = (int) ((mouseAnchorX/getGridSize()) % getSquaresAmount());
+            startY = (int) ((mouseAnchorY/getGridSize()) % getSquaresAmount());
         });
         //set new coordinates
         pieceImageView.setOnMouseDragged(mouseEvent -> {
@@ -74,8 +76,8 @@ public abstract class Piece extends GridBase{
             mouseAnchorY = mouseEvent.getSceneY();
 
             //board[x/80][y/80]
-            int x = (int) ((mouseAnchorX/getGridSize()) % getSqaresAmount());
-            int y = (int) ((mouseAnchorY/getGridSize()) % getSqaresAmount());
+            int x = (int) ((mouseAnchorX/getGridSize()) % getSquaresAmount());
+            int y = (int) ((mouseAnchorY/getGridSize()) % getSquaresAmount());
 
             setCurrentCoordinates(x, y);
             setImageSquare(pieceImageView, this.currentX, this.currentY);
@@ -85,16 +87,19 @@ public abstract class Piece extends GridBase{
             //if move is valid - make move
             if(isPlayerTurn()){
                 if(canCastle()){
+                    Move move = new Move(getCurrentPiece(getPieceChar()), startX, startY, currentX, currentY);
+                    historyOfMoves.add(move);
+                    move.printMove();
                     setImageSquare(pieceImageView, this.currentX, this.currentY);
-//                    Rook tempRook = castleAndReturnRook();
-//                    if(this.currentX == 2)
-//                        setImageSquare(tempRook.getPieceImage(), this.currentX + 1, this.currentY);
-//                    else
-//                        setImageSquare(tempRook.getPieceImage(), this.currentX - 1, this.currentY);
                     castle();
+                    if(isMate()) mate();
                     nextPlayersTurn();
                 }
                 else if(isValidMoveWithCheck()){
+                    Move move = new Move(getCurrentPiece(getPieceChar()), startX, startY, currentX, currentY);
+                    historyOfMoves.add(move);
+                    move.printMove();
+                    printBoard(charBoard);
                     if(!stackRemovedPiece.isEmpty()){
                         getAnchorPane().getChildren().remove(stackRemovedPiece.pop().getPieceImage());
                     }
@@ -110,14 +115,12 @@ public abstract class Piece extends GridBase{
             }
         });
     }
-    //turn
     boolean isPlayerTurn(){
         if(getPieceColor()==1 && playerWhite.isPlayerTurn())
             return true;
         else return getPieceColor() == 0 && playerBlack.isPlayerTurn();
     }
 
-    //abstract validation function
     public abstract boolean isValidMove();
     public boolean isValidMoveWithCheck(){
         if(isValidMove()){
@@ -138,7 +141,6 @@ public abstract class Piece extends GridBase{
         }
         return false;
     }
-
     //use only while generating moves, not when making them
     public boolean isValidMoveWithCheck(int x, int y){
         copyCharBoard(charBoard, previousCharBoard);
@@ -216,8 +218,21 @@ public abstract class Piece extends GridBase{
         img.setLayoutY(y * getGridSize() - img.getY());
     }
     public abstract ImageView getPieceImage();
+    public Piece getCurrentPiece(char pieceChar){
+        if(getPieceColor()==1){
+            for(Piece piece : playerWhitePieces){
+                if(piece.getPieceChar() == pieceChar)
+                    return piece;
+            }
+        } else{
+            for(Piece piece : playerBlackPieces){
+                if(piece.getPieceChar() == pieceChar)
+                    return piece;
+            }
+        }
+        return null;
+    }
 
-    //set and get for start and current coordinates of the piece
     public void setCurrentCoordinates(int currentX, int currentY) {
         this.currentX = currentX;
         this.currentY = currentY;
@@ -281,7 +296,6 @@ public abstract class Piece extends GridBase{
     public boolean isDiagonal(){
         return startX - startY == currentX - currentY || startY + startX == currentX + currentY;
     }
-    //check if there is a figure between start point and current point - horizontal and vertical
     public boolean isNotBlocked(){
         //vertical
         if(startY == currentY){
@@ -407,15 +421,12 @@ public abstract class Piece extends GridBase{
         if(getPieceColor() == 1){
             for(Piece p : playerBlackPieces){
                 if(!(p.generateLegalMovesWithCheck().isEmpty())){
-                    System.out.println(p.getPieceChar());
-                    p.printLegalMoves();
                     return false;
                 }
             }
         } else {
             for(Piece p : playerWhitePieces){
                 if(!(p.generateLegalMovesWithCheck().isEmpty())){
-                    System.out.println(p.getPieceChar());
                     return false;
                 }
             }
@@ -436,6 +447,7 @@ public abstract class Piece extends GridBase{
         }
         alert.showAndWait();
     }
+
     //CASTLE FUNCTIONALITY
     public boolean canCastle(){
         return isValidMove() &&
@@ -468,6 +480,7 @@ public abstract class Piece extends GridBase{
                 rook.startX = newRookX;
                 switchKingCoordinates(currentX, currentY);
                 setImageSquare(rook.getPieceImage(), newRookX, this.currentY);
+                break;
             }
         }
     }
@@ -481,13 +494,27 @@ public abstract class Piece extends GridBase{
                 rook.startX = newRookX;
                 switchKingCoordinates(currentX, currentY);
                 setImageSquare(rook.getPieceImage(), newRookX, this.currentY);
+                break;
             }
         }
     }
+
+    //UN PASSANT FUNCTIONALITY
+    public boolean canUnPassant(){
+        return false;
+    }
+
     //BOARD FUNCTIONALITY
     void copyCharBoard(char[][] boardFrom, char[][] boardTo){
         for(int i = 0; i<boardFrom.length; i++)
             System.arraycopy(boardFrom[i], 0, boardTo[i], 0, boardFrom[0].length);
     }
 
+    //MOVES FUNCTIONALITY
+    public static Vector<Move> getHistoryOfMoves() {
+        return historyOfMoves;
+    }
+    public static Move getLastMove(){
+        return historyOfMoves.getLast();
+    }
 }
