@@ -14,12 +14,14 @@ public class King extends Piece{
     public King(boolean color, AnchorPane pane){
         super(color, pane);
         //set color of the image
-        if(color){
+        if(color == WHITE_COLOR){
             pieceImage = loadImage("img/kingW.png");
-            setPieceChar('K');
+            this.color = WHITE_COLOR;
+            this.pieceChar = 'K';
         } else{
             pieceImage = loadImage("img/kingB.png");
-            setPieceChar('k');
+            this.color = BLACK_COLOR;
+            this.pieceChar = 'k';
         }
         isFirstMove = true;
         //resize and make the image draggable

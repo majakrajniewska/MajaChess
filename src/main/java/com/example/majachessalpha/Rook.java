@@ -15,12 +15,14 @@ public class Rook extends Piece {
         super(color,pane);
         setValue(5);
         //set color of the image
-        if(color){
+        if(color == WHITE_COLOR){
             pieceImage = loadImage("img/rookW.png");
-            setPieceChar('R');
+            this.color = WHITE_COLOR;
+            pieceChar = 'R';
         } else{
             pieceImage = loadImage("img/rookB.png");
-            setPieceChar('r');
+            this.color = BLACK_COLOR;
+            pieceChar = 'r';
         }
         isFirstMove = true;
         //resize and make the image draggable

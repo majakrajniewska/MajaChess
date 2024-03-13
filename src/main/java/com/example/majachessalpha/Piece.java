@@ -64,8 +64,8 @@ public abstract class Piece extends GridBase{
         ImageView pieceImageView = new ImageView(img);
 
         // Resize (set width and height)
-        pieceImageView.setFitWidth(80);
-        pieceImageView.setFitHeight(80);
+        pieceImageView.setFitWidth(GRID_SIZE);
+        pieceImageView.setFitHeight(GRID_SIZE);
 
         //make draggable
         makeDraggable(pieceImageView);
@@ -80,8 +80,8 @@ public abstract class Piece extends GridBase{
             mouseAnchorY = mouseEvent.getSceneY();
 
             //board[x/80][y/80]
-            startX = (int) ((mouseAnchorX/getGridSize()) % getSquaresAmount());
-            startY = (int) ((mouseAnchorY/getGridSize()) % getSquaresAmount());
+            startX = (int) ((mouseAnchorX/getGridSize()) % BOARD_WIDTH);
+            startY = (int) ((mouseAnchorY/getGridSize()) % BOARD_LENGTH);
         });
         //set new coordinates
         pieceImageView.setOnMouseDragged(mouseEvent -> {
@@ -89,8 +89,8 @@ public abstract class Piece extends GridBase{
             mouseAnchorY = mouseEvent.getSceneY();
 
             //board[x/80][y/80]
-            int x = (int) ((mouseAnchorX/getGridSize()) % getSquaresAmount());
-            int y = (int) ((mouseAnchorY/getGridSize()) % getSquaresAmount());
+            int x = (int) ((mouseAnchorX/getGridSize()) % BOARD_WIDTH);
+            int y = (int) ((mouseAnchorY/getGridSize()) % BOARD_LENGTH);
 
             setCurrentCoordinates(x, y);
             setImageSquare(pieceImageView, this.currentX, this.currentY);
@@ -541,6 +541,11 @@ public abstract class Piece extends GridBase{
         return historyOfMoves;
     }
     public static Move getLastMove(){
-        return historyOfMoves.getLast();
+        Move lastMove = null;
+        if(!historyOfMoves.isEmpty()){
+            lastMove = historyOfMoves.lastElement();
+            historyOfMoves.remove(historyOfMoves.size()-1);
+        }
+        return lastMove;
     }
 }

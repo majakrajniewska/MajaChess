@@ -36,63 +36,63 @@ public class PositionHandler extends GridBase{
             if(fen.charAt(i) >= '1' && fen.charAt(i) <= '8') {
                 //set dots on empty squares in char board
                 for(int j = 0; j < (fen.charAt(i) - '0'); j++){
-                    charBoard[(square+j)%8][(square+j)/8] = '.';
+                    charBoard[(square+j)%BOARD_WIDTH][(square+j)/BOARD_LENGTH] = '.';
                 }
                 square += (fen.charAt(i) - '0');
             } else {
                 switch (fen.charAt(i)){
                     case 'r' -> {
-                        Rook piece = new Rook(false, pane);
+                        Rook piece = new Rook(BLACK_COLOR, pane);
                         setPieceGraphic(piece.getPieceImage(), getAnchorPane(), square, fen.charAt(i), piece);
                         square+=1;
                         playerBlackPieces.add(piece);
                         playerBlackRooks.add(piece);
                     }
                     case 'R' -> {
-                        Rook piece = new Rook(true, pane);
+                        Rook piece = new Rook(WHITE_COLOR, pane);
                         setPieceGraphic(piece.getPieceImage(), getAnchorPane(), square, fen.charAt(i), piece);
                         square+=1;
                         playerWhitePieces.add(piece);
                         playerWhiteRooks.add(piece);
                     }
                     case 'n' -> {
-                        Knight piece = new Knight(false, pane);
+                        Knight piece = new Knight(BLACK_COLOR, pane);
                         setPieceGraphic(piece.getPieceImage(), getAnchorPane(), square, fen.charAt(i), piece);
                         square+=1;
                         playerBlackPieces.add(piece);
                     }
                     case 'N' -> {
-                        Knight piece = new Knight(true, pane);
+                        Knight piece = new Knight(WHITE_COLOR, pane);
                         setPieceGraphic(piece.getPieceImage(), getAnchorPane(), square, fen.charAt(i), piece);
                         square+=1;
                         playerWhitePieces.add(piece);
                     }
                     case 'b' -> {
-                        Bishop piece = new Bishop(false, pane);
+                        Bishop piece = new Bishop(BLACK_COLOR, pane);
                         setPieceGraphic(piece.getPieceImage(), getAnchorPane(), square, fen.charAt(i), piece);
                         square+=1;
                         playerBlackPieces.add(piece);
                     }
                     case 'B' -> {
-                        Bishop piece = new Bishop(true, pane);
+                        Bishop piece = new Bishop(WHITE_COLOR, pane);
                         setPieceGraphic(piece.getPieceImage(), getAnchorPane(), square, fen.charAt(i), piece);
                         square+=1;
                         playerWhitePieces.add(piece);
                     }
                     case 'q' -> {
-                        Queen piece = new Queen(false, pane);
+                        Queen piece = new Queen(BLACK_COLOR, pane);
                         setPieceGraphic(piece.getPieceImage(), getAnchorPane(), square, fen.charAt(i), piece);
                         square+=1;
                         playerBlackPieces.add(piece);
                     }
                     case 'Q' -> {
-                        Queen piece = new Queen(true, pane);
+                        Queen piece = new Queen(WHITE_COLOR, pane);
                         setPieceGraphic(piece.getPieceImage(), getAnchorPane(), square, fen.charAt(i), piece);
                         square+=1;
                         playerWhitePieces.add(piece);
                     }
                     case 'k' -> {
-                        King piece = new King(false, pane);
+                        King piece = new King(BLACK_COLOR, pane);
                         setPieceGraphic(piece.getPieceImage(), getAnchorPane(), square, fen.charAt(i), piece);
                         blackKingCoordinates[0] = square%8;
                         blackKingCoordinates[1] = square/8;
@@ -100,7 +100,7 @@ public class PositionHandler extends GridBase{
                         playerBlackPieces.add(piece);
                     }
                     case 'K' -> {
-                        King piece = new King(true, pane);
+                        King piece = new King(WHITE_COLOR, pane);
                         setPieceGraphic(piece.getPieceImage(), getAnchorPane(), square, fen.charAt(i), piece);
                         whiteKingCoordinates[0] = square%8;
                         whiteKingCoordinates[1] = square/8;
@@ -108,13 +108,13 @@ public class PositionHandler extends GridBase{
                         playerWhitePieces.add(piece);
                     }
                     case 'p' -> {
-                        Pawn piece = new Pawn(false, pane);
+                        Pawn piece = new Pawn(BLACK_COLOR, pane);
                         setPieceGraphic(piece.getPieceImage(), getAnchorPane(), square, fen.charAt(i), piece);
                         square+=1;
                         playerBlackPieces.add(piece);
                     }
                     case 'P' -> {
-                        Pawn piece = new Pawn(true, pane);
+                        Pawn piece = new Pawn(WHITE_COLOR, pane);
                         setPieceGraphic(piece.getPieceImage(), getAnchorPane(), square, fen.charAt(i), piece);
                         square+=1;
                         playerWhitePieces.add(piece);
@@ -125,14 +125,14 @@ public class PositionHandler extends GridBase{
     }
 
     public void setPieceGraphic(ImageView image, AnchorPane grid, int square, char charAtI, Piece piece){
-        if(square < 64){
-            charBoard[square%8][square/8] = charAtI;
-            boardImageView[square%8][square/8] = image;
-            piece.startX = square%8;
-            piece.startY = square/8;
+        if(square < SQUARES_AMOUNT){
+            charBoard[square%BOARD_WIDTH][square/BOARD_LENGTH] = charAtI;
+            boardImageView[square%BOARD_WIDTH][square/BOARD_LENGTH] = image;
+            piece.startX = square%BOARD_WIDTH;
+            piece.startY = square/BOARD_LENGTH;
 
-            image.setX((square%8)*getGridSize());
-            image.setY((square/8)*getGridSize());
+            image.setX((square%BOARD_WIDTH)*getGridSize());
+            image.setY((square/BOARD_LENGTH)*getGridSize());
             grid.getChildren().add(image);
         }
     }

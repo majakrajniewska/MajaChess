@@ -13,12 +13,14 @@ public class Bishop extends Piece{
         super(color,pane);
         setValue(3);
         //set color of the image
-        if(color){
+        if(color == WHITE_COLOR){
             pieceImage = loadImage("img/bishopW.png");
-            setPieceChar('B');
+            this.color = WHITE_COLOR;
+            this.pieceChar = 'B';
         } else{
             pieceImage = loadImage("img/bishopB.png");
-            setPieceChar('b');
+            this.color = BLACK_COLOR;
+            this.pieceChar = 'b';
         }
 
         //resize and make the image draggable

@@ -10,9 +10,9 @@ public class GridHandler extends GridBase {
     }
 
     public void updateGrid() {
-        for(int i = 0; i < getAllSquares(); i++){
-            int x = (i % getSquaresAmount());
-            int y = (i / getSquaresAmount());
+        for(int i = 0; i < SQUARES_AMOUNT; i++){
+            int x = (i % BOARD_WIDTH);
+            int y = (i / BOARD_LENGTH);
 
             Rectangle rectangle = new Rectangle(x * getGridSize(),y * getGridSize(),getGridSize(),getGridSize());
 

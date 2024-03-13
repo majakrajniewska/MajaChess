@@ -13,12 +13,14 @@ public class Queen extends Piece{
         super(color, pane);
         setValue(9);
         //set color of the image
-        if(color){
+        if(color == WHITE_COLOR){
             pieceImage = loadImage("img/queenW.png");
-            setPieceChar('Q');
+            this.color = WHITE_COLOR;
+            this.pieceChar = 'Q';
         } else{
             pieceImage = loadImage("img/queenB.png");
-            setPieceChar('q');
+            this.color = BLACK_COLOR;
+            this.pieceChar = 'q';
         }
 
         //resize and make the image draggable
