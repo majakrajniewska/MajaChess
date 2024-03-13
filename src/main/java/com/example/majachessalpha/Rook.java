@@ -17,12 +17,10 @@ public class Rook extends Piece {
         //set color of the image
         if(color == WHITE_COLOR){
             pieceImage = loadImage("img/rookW.png");
-            this.color = WHITE_COLOR;
-            pieceChar = 'R';
+            setPieceChar('R');
         } else{
             pieceImage = loadImage("img/rookB.png");
-            this.color = BLACK_COLOR;
-            pieceChar = 'r';
+            setPieceChar('r');
         }
         isFirstMove = true;
         //resize and make the image draggable

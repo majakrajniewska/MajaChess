@@ -16,12 +16,10 @@ public class King extends Piece{
         //set color of the image
         if(color == WHITE_COLOR){
             pieceImage = loadImage("img/kingW.png");
-            this.color = WHITE_COLOR;
-            this.pieceChar = 'K';
+            setPieceChar('K');
         } else{
             pieceImage = loadImage("img/kingB.png");
-            this.color = BLACK_COLOR;
-            this.pieceChar = 'k';
+            setPieceChar('k');
         }
         isFirstMove = true;
         //resize and make the image draggable

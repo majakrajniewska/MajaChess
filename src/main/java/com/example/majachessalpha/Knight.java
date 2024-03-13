@@ -25,12 +25,10 @@ public class Knight extends Piece {
         //set color of the image
         if(color == WHITE_COLOR){
             pieceImage = loadImage("img/knightW.png");
-            this.color = WHITE_COLOR;
-            this.pieceChar = 'N';
+            setPieceChar('N');
         } else{
             pieceImage = loadImage("img/knightB.png");
-            this.color = BLACK_COLOR;
-            this.pieceChar = 'n';
+            setPieceChar('n');
         }
 
         //resize and make the image draggable

@@ -16,12 +16,10 @@ public class Pawn extends Piece {
         //set color of image
         if(color == WHITE_COLOR){
             pieceImage = loadImage("img/pawnW.png");
-            this.color = WHITE_COLOR;
-            this.pieceChar = 'P';
+            setPieceChar('P');
         } else{
             pieceImage = loadImage("img/pawnB.png");
-            this.color = BLACK_COLOR;
-            this.pieceChar = 'p';
+            setPieceChar('p');
         }
 
         //resize and make the image draggable

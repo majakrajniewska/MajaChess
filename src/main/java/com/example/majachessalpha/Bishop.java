@@ -15,12 +15,10 @@ public class Bishop extends Piece{
         //set color of the image
         if(color == WHITE_COLOR){
             pieceImage = loadImage("img/bishopW.png");
-            this.color = WHITE_COLOR;
-            this.pieceChar = 'B';
+            setPieceChar('B');
         } else{
             pieceImage = loadImage("img/bishopB.png");
-            this.color = BLACK_COLOR;
-            this.pieceChar = 'b';
+            setPieceChar('b');
         }
 
         //resize and make the image draggable

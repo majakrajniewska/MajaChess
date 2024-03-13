@@ -5,8 +5,8 @@ import java.util.List;
 public class GameHandler {
 
     //Constants
-    public static final int WHITE_COLOR = 1;
-    public static final int BLACK_COLOR = 0;
+    public static final boolean WHITE_COLOR = true;
+    public static final boolean BLACK_COLOR = false;
     public static final int NUM_OF_PLAYERS = 2;
     public static final int BOARD_WIDTH = 8;
     public static final int BOARD_LENGTH = 8;
