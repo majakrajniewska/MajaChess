@@ -9,10 +9,6 @@ import java.util.List;
 public class Knight extends Piece {
     private Image pieceImage;
     private ImageView pieceImageView;
-    int color; //black 0 white 1
-    int value;
-    char pieceChar;
-    //knight possible movement
     int[][] movement = {
             {1, -2},
             {1, 2},
@@ -23,18 +19,16 @@ public class Knight extends Piece {
             {-2, 1},
             {-2, -1}
     };
-    public Knight(int color, AnchorPane pane){
-        super(pane);
-        this.value = 3;
+    public Knight(boolean color, AnchorPane pane){
+        super(color,pane);
+        setValue(3);
         //set color of the image
-        if(color == 1){
+        if(color){
             pieceImage = loadImage("img/knightW.png");
-            this.color = 1;
-            this.pieceChar = 'N';
+            setPieceChar('N');
         } else{
             pieceImage = loadImage("img/knightB.png");
-            this.color = 0;
-            this.pieceChar = 'n';
+            setPieceChar('n');
         }
 
         //resize and make the image draggable
@@ -55,15 +49,6 @@ public class Knight extends Piece {
         }
         return false;
     }
-    @Override
-    public char getPieceChar(){
-        return pieceChar;
-    }
-    public int getPieceColor() {
-        return color;
-    }
-
-    @Override
     public List<int[]> generateLegalMoves() {
         legalMoves.clear();
 
@@ -71,14 +56,12 @@ public class Knight extends Piece {
             int x = startX - move[0];
             int y = startY - move[1];
 
-            if (isValidSquare(x, y) && (isSquareEmpty(x, y) || isSquareOccupied(x, y, color))){
+            if (isValidSquare(x, y) && (isSquareEmpty(x, y) || isSquareOccupied(x, y, whitePiece()))){
                 legalMoves.add(new int[]{x, y});
             }
         }
         return legalMoves;
     }
-
-    @Override
     public List<int[]> generateLegalMovesWithCheck() {
         legalMoves.clear();
 
@@ -86,7 +69,7 @@ public class Knight extends Piece {
             int x = startX - move[0];
             int y = startY - move[1];
 
-            if(isValidSquare(x, y) && (isSquareEmpty(x, y) || isSquareOccupied(x, y, color)) && isValidMoveWithCheck(x, y))
+            if(isValidSquare(x, y) && (isSquareEmpty(x, y) || isSquareOccupied(x, y, whitePiece())) && isValidMoveWithCheck(x, y))
                 legalMoves.add(new int[] {x, y});
         }
         return legalMoves;

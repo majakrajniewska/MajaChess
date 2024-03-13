@@ -7,25 +7,19 @@ import javafx.scene.layout.AnchorPane;
 import java.util.List;
 
 public class Pawn extends Piece {
-
     private Image pieceImage;
     ImageView pieceImageView;
-    int color; //black 0 white 1
-    int value;
-    char pieceChar;
 
-    public Pawn(int color, AnchorPane pane){
-        super(pane);
-        this.value = 1;
+    public Pawn(boolean color, AnchorPane pane){
+        super(color,pane);
+        setValue(1);
         //set color of image
-        if(color == 1){
+        if(color){
             pieceImage = loadImage("img/pawnW.png");
-            this.color = 1;
-            this.pieceChar = 'P';
+            setPieceChar('P');
         } else{
             pieceImage = loadImage("img/pawnB.png");
-            this.color = 0;
-            this.pieceChar = 'p';
+            setPieceChar('p');
         }
 
         //resize and make the image draggable
@@ -47,7 +41,7 @@ public class Pawn extends Piece {
             }
         }
         //allowing to go one square or capture another piece
-        if(color == 1){
+        if(whitePiece()){
             if(currentY == startY-1 && isHorizontal() && isSquareEmpty(currentX, currentY)){
                 return true;
             } else if (canDoUnPassant() && currentY == 2 && (currentX == startX-1 || currentX == startX+1)){
@@ -67,26 +61,16 @@ public class Pawn extends Piece {
                             (canCapture());
         }
     }
-    @Override
-    public char getPieceChar(){
-        return pieceChar;
-    }
-
-    @Override
-    public int getPieceColor() {
-        return color;
-    }
-
     public List<int[]> generateLegalMoves() {
         legalMoves.clear();
-        if(color == 1){
+        if(whitePiece()){
             if(isFirstMove() && isSquareEmpty(startX, startY-1) && isSquareEmpty(startX, startY-2))
                 legalMoves.add(new int[]{startX, startY-2});
             if(isValidSquare(startX, startY-1) && isSquareEmpty(startX, startY-1))
                 legalMoves.add(new int[]{startX, startY-1});
-            if(isValidSquare(startX-1, startY-1) && isSquareOccupied(startX-1, startY-1, 1))
+            if(isValidSquare(startX-1, startY-1) && isSquareOccupied(startX-1, startY-1, true))
                 legalMoves.add(new int[]{startX-1, startY-1});
-            if(isValidSquare(startX+1, startY-1) && isSquareOccupied(startX+1, startY-1, 1))
+            if(isValidSquare(startX+1, startY-1) && isSquareOccupied(startX+1, startY-1, true))
                 legalMoves.add(new int[]{startX+1, startY-1});
             if(canDoUnPassantLeft()) legalMoves.add(new int[]{startX-1, startY-1});
             if(canDoUnPassantRight()) legalMoves.add(new int[]{startX+1, startY-1});
@@ -95,9 +79,9 @@ public class Pawn extends Piece {
                 legalMoves.add(new int[]{startX, startY+2});
             if(isValidSquare(startX, startY+1) && isSquareEmpty(startX, startY+1))
                 legalMoves.add(new int[]{startX, startY+1});
-            if(isValidSquare(startX-1, startY+1) && isSquareOccupied(startX-1, startY+1, 0))
+            if(isValidSquare(startX-1, startY+1) && isSquareOccupied(startX-1, startY+1, false))
                 legalMoves.add(new int[]{startX-1, startY+1});
-            if(isValidSquare(startX+1, startY+1) && isSquareOccupied(startX+1, startY+1, 0))
+            if(isValidSquare(startX+1, startY+1) && isSquareOccupied(startX+1, startY+1, false))
                 legalMoves.add(new int[]{startX+1, startY+1});
             if(canDoUnPassantLeft()) legalMoves.add(new int[]{startX-1, startY+1});
             if(canDoUnPassantRight()) legalMoves.add(new int[]{startX+1, startY+1});
@@ -109,15 +93,15 @@ public class Pawn extends Piece {
     //doesn't have un passant yet
     public List<int[]> generateLegalMovesWithCheck() {
         legalMoves.clear();
-        if(color == 1){
+        if(whitePiece()){
             if(isFirstMove() && isSquareEmpty(startX, startY-1) && isSquareEmpty(startX, startY-2) && isValidMoveWithCheck(startX, startY-2))
                 legalMoves.add(new int[]{startX, startY - 2});
             if(isValidSquare(startX, startY-1) && isSquareEmpty(startX, startY-1) && isValidMoveWithCheck(startX, startY-1))
                 legalMoves.add(new int[]{startX, startY-1});
-            if(isValidSquare(startX-1, startY-1) && isSquareOccupied(startX-1, startY-1, 1) && isValidMoveWithCheck(startX-1, startY-1)) {
+            if(isValidSquare(startX-1, startY-1) && isSquareOccupied(startX-1, startY-1, true) && isValidMoveWithCheck(startX-1, startY-1)) {
                 legalMoves.add(new int[]{startX - 1, startY - 1});
             }
-            if(isValidSquare(startX+1, startY-1) && isSquareOccupied(startX+1, startY-1, 1) && isValidMoveWithCheck(startX+1, startY-1)) {
+            if(isValidSquare(startX+1, startY-1) && isSquareOccupied(startX+1, startY-1, true) && isValidMoveWithCheck(startX+1, startY-1)) {
                 legalMoves.add(new int[]{startX + 1, startY - 1});
             }
         } else{
@@ -125,10 +109,10 @@ public class Pawn extends Piece {
                 legalMoves.add(new int[]{startX, startY+2});
             if(isValidSquare(startX, startY+1) && isSquareEmpty(startX, startY+1) && isValidMoveWithCheck(startX, startY+1))
                 legalMoves.add(new int[]{startX, startY+1});
-            if(isValidSquare(startX-1, startY+1) && isSquareOccupied(startX-1, startY+1, 0) && isValidMoveWithCheck(startX-1, startY+1)) {
+            if(isValidSquare(startX-1, startY+1) && isSquareOccupied(startX-1, startY+1, false) && isValidMoveWithCheck(startX-1, startY+1)) {
                 legalMoves.add(new int[]{startX - 1, startY + 1});
             }
-            if(isValidSquare(startX+1, startY+1) && isSquareOccupied(startX+1, startY+1, 0) && isValidMoveWithCheck(startX+1, startY+1)){
+            if(isValidSquare(startX+1, startY+1) && isSquareOccupied(startX+1, startY+1, false) && isValidMoveWithCheck(startX+1, startY+1)){
                 legalMoves.add(new int[]{startX + 1, startY + 1});
             }
         }
@@ -136,20 +120,20 @@ public class Pawn extends Piece {
     }
 
     public boolean isFirstMove(){
-        if(color == 1)
+        if(whitePiece())
             return startY == 6;
         else
             return startY == 1;
     }
     public boolean canDoUnPassant(){
-        if(color==1 && startY==3){
+        if(whitePiece() && startY==3){
             Move lastMove = getLastMove();
             Piece lastMovedPiece = lastMove.getPiece();
             return (lastMovedPiece.getPieceChar() == 'p') &&
                     (lastMovedPiece.currentY == 3) &&
                     (lastMovedPiece.currentX == this.currentX - 1 || lastMovedPiece.currentX == this.currentX + 1) &&
                     (lastMovedPiece.startY == 1);
-        } else if(color==0 && startY==4){
+        } else if(!whitePiece() && startY==4){
             Move lastMove = getLastMove();
             Piece lastMovedPiece = lastMove.getPiece();
             return (lastMovedPiece.getPieceChar() == 'P') &&

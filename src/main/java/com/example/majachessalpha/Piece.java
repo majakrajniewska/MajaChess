@@ -9,6 +9,9 @@ import java.net.URL;
 import java.util.*;
 //UNPASSANT DZIALA TYLKO CZARNY W LEWO I NIE USUWA BIALEGO PIONKA
 public abstract class Piece extends GridBase{
+    private boolean color;
+    private int value;
+    private char pieceChar;
     double mouseAnchorX;
     double mouseAnchorY;
     //coordinates from which piece starts its move
@@ -27,8 +30,8 @@ public abstract class Piece extends GridBase{
     static char[][] previousCharBoard = new char[8][8];
     private static List<Piece> playerWhitePieces;
     private static List<Piece> playerBlackPieces;
-    //we need to have 50 last moves to check if its a tie and if un passant is legal
-    private static Vector<Move> historyOfMoves = new Vector<>();
+    //we need to have 50 last moves to check if it's a tie and if un passant is legal
+    private static Vector<Move> historyOfMoves = new Vector<>(); //doesn't work yet
 
     public Piece(AnchorPane pane){
         super(pane);
@@ -37,6 +40,16 @@ public abstract class Piece extends GridBase{
         if(playerWhitePieces == null) playerWhitePieces = getPlayerWhitePieces();
         if(whiteKingCoordinates == null) whiteKingCoordinates = getWhiteKingCoordinates();
         if(blackKingCoordinates == null) blackKingCoordinates = getBlackKingCoordinates();
+    }
+
+    public Piece(boolean color, AnchorPane pane){
+        super(pane);
+        if(charBoard == null) charBoard = getBoard();
+        if(playerBlackPieces == null) playerBlackPieces = getPlayerBlackPieces();
+        if(playerWhitePieces == null) playerWhitePieces = getPlayerWhitePieces();
+        if(whiteKingCoordinates == null) whiteKingCoordinates = getWhiteKingCoordinates();
+        if(blackKingCoordinates == null) blackKingCoordinates = getBlackKingCoordinates();
+        this.color = color;
     }
 
     public Image loadImage(String path){
@@ -116,9 +129,9 @@ public abstract class Piece extends GridBase{
         });
     }
     boolean isPlayerTurn(){
-        if(getPieceColor()==1 && playerWhite.isPlayerTurn())
+        if(whitePiece() && playerWhite.isPlayerTurn())
             return true;
-        else return getPieceColor() == 0 && playerBlack.isPlayerTurn();
+        else return !whitePiece() && playerBlack.isPlayerTurn();
     }
 
     public abstract boolean isValidMove();
@@ -211,15 +224,28 @@ public abstract class Piece extends GridBase{
         }
     }
 
-    public abstract char getPieceChar();
-    public abstract int getPieceColor();
+    public char getPieceChar(){return pieceChar;};
+    public boolean whitePiece(){return color;};
+    public int getValue() {
+        return value;
+    }
+    public void setColor(boolean color) {
+        this.color = color;
+    }
+    public void setPieceChar(char pieceChar) {
+        this.pieceChar = pieceChar;
+    }
+    public void setValue(int value) {
+        this.value = value;
+    }
+
     public void setImageSquare(ImageView img, int x, int y){
         img.setLayoutX(x * getGridSize() - img.getX());
         img.setLayoutY(y * getGridSize() - img.getY());
     }
     public abstract ImageView getPieceImage();
     public Piece getCurrentPiece(char pieceChar){
-        if(getPieceColor()==1){
+        if(whitePiece()){
             for(Piece piece : playerWhitePieces){
                 if(piece.getPieceChar() == pieceChar)
                     return piece;
@@ -243,7 +269,7 @@ public abstract class Piece extends GridBase{
     }
 
     //remove instance of Piece from Player
-    public Piece capture(){
+    public Piece capture(){ //start, current
         if(Character.isUpperCase(previousCharBoard[startX][startY]) &&
             Character.isLowerCase(previousCharBoard[currentX][currentY])){
             for(Piece piece : playerBlackPieces){
@@ -384,8 +410,8 @@ public abstract class Piece extends GridBase{
     public boolean isSquareEmpty(int x, int y){
         return charBoard[x][y] == '.';
     }
-    public boolean isSquareOccupied(int x, int y, int playerColor){
-        if(playerColor==1){
+    public boolean isSquareOccupied(int x, int y, boolean playerColor){
+        if(playerColor){
             return Character.isLowerCase(charBoard[x][y]);
         } else{
             return Character.isUpperCase(charBoard[x][y]);
@@ -402,7 +428,7 @@ public abstract class Piece extends GridBase{
 
     //CHECK AND MATE
     public boolean isCheck(char[][] board){
-        if(Character.isUpperCase(board[startX][startY])){
+        if(Character.isUpperCase(board[startX][startY])){ //ZMIEŃ TO
             for(Piece p : playerBlackPieces){
                 for(int[] move : p.generateLegalMoves())
                     if(move[0] == whiteKingCoordinates[0] && move[1] == whiteKingCoordinates[1]) return true;
@@ -418,7 +444,7 @@ public abstract class Piece extends GridBase{
         return false;
     }
     public boolean isMate(){
-        if(getPieceColor() == 1){
+        if(whitePiece()){
             for(Piece p : playerBlackPieces){
                 if(!(p.generateLegalMovesWithCheck().isEmpty())){
                     return false;
@@ -438,7 +464,7 @@ public abstract class Piece extends GridBase{
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("MAT");
         alert.setHeaderText(null); // Set to null to remove header text
-        if(getPieceColor() == 1){
+        if(whitePiece()){
             alert.setContentText("Białe wygrały ez");
             System.out.println("White won");
         } else{
@@ -456,7 +482,7 @@ public abstract class Piece extends GridBase{
     }
     public void castle(){
         //switch king and rook (charboard & GUI)
-        if(getPieceColor() == 0){
+        if(!whitePiece()){
             if(currentX < startX){
                 switchKingAndRookBlack(startX - 4, startX - 1);
             } else{

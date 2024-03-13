@@ -8,8 +8,8 @@ public class GameHandler {
     static int[] whiteKingCoordinates = new int[2];
     static int[] blackKingCoordinates = new int[2];
     GameHandler(){
-        if(playerWhite == null) playerWhite = new Player(1, true);
-        if(playerBlack == null) playerBlack = new Player(0, false);
+        if(playerWhite == null) playerWhite = new Player(true, true);
+        if(playerBlack == null) playerBlack = new Player(false, false);
     }
 
     public List<Piece> getPlayerWhitePieces() {

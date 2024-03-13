@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Player {
-    int color;
-    //1 - this player's turn; 0 - opponent's turn
+    private boolean color; //ZMIEŃ NA BOOLEAN
+    //true - white; false - black
     private boolean turn;
     private List<Piece> playerPieces;
     private List<Rook> playerRooks; //for castle
-    Player(int color, boolean turn){
+    Player(boolean color, boolean turn){
         this.turn = turn;
         this.color = color;
         playerPieces = new ArrayList<>();

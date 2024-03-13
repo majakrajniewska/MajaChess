@@ -42,57 +42,57 @@ public class PositionHandler extends GridBase{
             } else {
                 switch (fen.charAt(i)){
                     case 'r' -> {
-                        Rook piece = new Rook(0, pane);
+                        Rook piece = new Rook(false, pane);
                         setPieceGraphic(piece.getPieceImage(), getAnchorPane(), square, fen.charAt(i), piece);
                         square+=1;
                         playerBlackPieces.add(piece);
                         playerBlackRooks.add(piece);
                     }
                     case 'R' -> {
-                        Rook piece = new Rook(1, pane);
+                        Rook piece = new Rook(true, pane);
                         setPieceGraphic(piece.getPieceImage(), getAnchorPane(), square, fen.charAt(i), piece);
                         square+=1;
                         playerWhitePieces.add(piece);
                         playerWhiteRooks.add(piece);
                     }
                     case 'n' -> {
-                        Knight piece = new Knight(0, pane);
+                        Knight piece = new Knight(false, pane);
                         setPieceGraphic(piece.getPieceImage(), getAnchorPane(), square, fen.charAt(i), piece);
                         square+=1;
                         playerBlackPieces.add(piece);
                     }
                     case 'N' -> {
-                        Knight piece = new Knight(1, pane);
+                        Knight piece = new Knight(true, pane);
                         setPieceGraphic(piece.getPieceImage(), getAnchorPane(), square, fen.charAt(i), piece);
                         square+=1;
                         playerWhitePieces.add(piece);
                     }
                     case 'b' -> {
-                        Bishop piece = new Bishop(0, pane);
+                        Bishop piece = new Bishop(false, pane);
                         setPieceGraphic(piece.getPieceImage(), getAnchorPane(), square, fen.charAt(i), piece);
                         square+=1;
                         playerBlackPieces.add(piece);
                     }
                     case 'B' -> {
-                        Bishop piece = new Bishop(1, pane);
+                        Bishop piece = new Bishop(true, pane);
                         setPieceGraphic(piece.getPieceImage(), getAnchorPane(), square, fen.charAt(i), piece);
                         square+=1;
                         playerWhitePieces.add(piece);
                     }
                     case 'q' -> {
-                        Queen piece = new Queen(0, pane);
+                        Queen piece = new Queen(false, pane);
                         setPieceGraphic(piece.getPieceImage(), getAnchorPane(), square, fen.charAt(i), piece);
                         square+=1;
                         playerBlackPieces.add(piece);
                     }
                     case 'Q' -> {
-                        Queen piece = new Queen(1, pane);
+                        Queen piece = new Queen(true, pane);
                         setPieceGraphic(piece.getPieceImage(), getAnchorPane(), square, fen.charAt(i), piece);
                         square+=1;
                         playerWhitePieces.add(piece);
                     }
                     case 'k' -> {
-                        King piece = new King(0, pane);
+                        King piece = new King(false, pane);
                         setPieceGraphic(piece.getPieceImage(), getAnchorPane(), square, fen.charAt(i), piece);
                         blackKingCoordinates[0] = square%8;
                         blackKingCoordinates[1] = square/8;
@@ -100,7 +100,7 @@ public class PositionHandler extends GridBase{
                         playerBlackPieces.add(piece);
                     }
                     case 'K' -> {
-                        King piece = new King(1, pane);
+                        King piece = new King(true, pane);
                         setPieceGraphic(piece.getPieceImage(), getAnchorPane(), square, fen.charAt(i), piece);
                         whiteKingCoordinates[0] = square%8;
                         whiteKingCoordinates[1] = square/8;
@@ -108,13 +108,13 @@ public class PositionHandler extends GridBase{
                         playerWhitePieces.add(piece);
                     }
                     case 'p' -> {
-                        Pawn piece = new Pawn(0, pane);
+                        Pawn piece = new Pawn(false, pane);
                         setPieceGraphic(piece.getPieceImage(), getAnchorPane(), square, fen.charAt(i), piece);
                         square+=1;
                         playerBlackPieces.add(piece);
                     }
                     case 'P' -> {
-                        Pawn piece = new Pawn(1, pane);
+                        Pawn piece = new Pawn(true, pane);
                         setPieceGraphic(piece.getPieceImage(), getAnchorPane(), square, fen.charAt(i), piece);
                         square+=1;
                         playerWhitePieces.add(piece);
