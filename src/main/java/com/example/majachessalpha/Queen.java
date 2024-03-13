@@ -9,13 +9,9 @@ import java.util.List;
 public class Queen extends Piece{
     private Image pieceImage;
     private ImageView pieceImageView;
-    int color; //black 0 white 1
-    int value;
-    char pieceChar;
-
-    public Queen(int color, AnchorPane pane){
-        super(pane);
-        this.value = 9;
+    public Queen(boolean color, AnchorPane pane){
+        super(color, pane);
+        setValue(9);
         //set color of the image
         if(color == WHITE_COLOR){
             pieceImage = loadImage("img/queenW.png");
@@ -41,13 +37,6 @@ public class Queen extends Piece{
         return (isDiagonal() || isHorizontal() || isVertical()) && isNotBlocked();
     }
     @Override
-    public char getPieceChar(){
-        return pieceChar;
-    }
-    public int getPieceColor() {
-        return color;
-    }
-    @Override
     public List<int[]> generateLegalMoves() {
         legalMoves.clear();
 
@@ -66,7 +55,7 @@ public class Queen extends Piece{
 
                 if (isSquareEmpty(x, y)) {
                     legalMoves.add(new int[]{x, y});
-                } else if (isSquareOccupied(x, y, color)) {
+                } else if (isSquareOccupied(x, y, whitePiece())) {
                     legalMoves.add(new int[]{x, y});  // Can capture opponent's piece.
                     break;  // No need to check further in this direction.
                 } else {
@@ -98,7 +87,7 @@ public class Queen extends Piece{
             while (isValidSquare(x, y)) {
                 if (isSquareEmpty(x, y) && isValidMoveWithCheck(x, y)) {
                     legalMoves.add(new int[]{x, y});
-                } else if (isSquareOccupied(x, y, color) && isValidMoveWithCheck(x, y)) {
+                } else if (isSquareOccupied(x, y, whitePiece()) && isValidMoveWithCheck(x, y)) {
                     legalMoves.add(new int[]{x, y});  // Can capture opponent's piece.
                     break;  // No need to check further in this direction.
                 }else if(isSquareEmpty(x, y) && !isValidMoveWithCheck()){} //if square is empty, but there is check - keep going

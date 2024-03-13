@@ -9,12 +9,9 @@ import java.util.List;
 public class Bishop extends Piece{
     private Image pieceImage;
     private ImageView pieceImageView;
-    int color; //black 0 white 1
-    int value;
-    char pieceChar;
-    public Bishop(int color, AnchorPane pane){
-        super(pane);
-        this.value = 3;
+    public Bishop(boolean color, AnchorPane pane){
+        super(color,pane);
+        setValue(3);
         //set color of the image
         if(color == WHITE_COLOR){
             pieceImage = loadImage("img/bishopW.png");
@@ -39,13 +36,7 @@ public class Bishop extends Piece{
     public boolean isValidMove(){
         return isDiagonal() && isNotBlocked();
     }
-    @Override
-    public char getPieceChar(){
-        return pieceChar;
-    }
-    public int getPieceColor() {
-        return color;
-    }
+
     @Override
     public List<int[]> generateLegalMoves() {
         legalMoves.clear();
@@ -63,7 +54,7 @@ public class Bishop extends Piece{
 
                 if (isSquareEmpty(x, y)) {
                     legalMoves.add(new int[]{x, y});
-                } else if (isSquareOccupied(x, y, color)) {
+                } else if (isSquareOccupied(x, y, whitePiece())) {
                     legalMoves.add(new int[]{x, y});  // Can capture opponent's piece.
                     break;  // No need to check further in this direction.
                 } else {
@@ -93,7 +84,7 @@ public class Bishop extends Piece{
             while (isValidSquare(x, y)) {
                 if (isSquareEmpty(x, y) && isValidMoveWithCheck(x, y)) {
                     legalMoves.add(new int[]{x, y});
-                } else if (isSquareOccupied(x, y, color) && isValidMoveWithCheck(x, y)) {
+                } else if (isSquareOccupied(x, y, whitePiece()) && isValidMoveWithCheck(x, y)) {
                     legalMoves.add(new int[]{x, y});  // Can capture opponent's piece.
                     break;  // No need to check further in this direction.
                 }else if(isSquareEmpty(x, y) && !isValidMoveWithCheck()){} //if square is empty, but there is check - keep going
