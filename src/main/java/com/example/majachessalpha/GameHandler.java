@@ -3,13 +3,21 @@ package com.example.majachessalpha;
 import java.util.List;
 
 public class GameHandler {
+
+    //Constants
+    public static final int WHITE_COLOR = 1;
+    public static final int BLACK_COLOR = 0;
+    public static final int NUM_OF_PLAYERS = 2;
+    public static final int BOARD_WIDTH = 8;
+    public static final int BOARD_LENGTH = 8;
+
     static Player playerWhite;
     static Player playerBlack;
-    static int[] whiteKingCoordinates = new int[2];
-    static int[] blackKingCoordinates = new int[2];
+    static int[] whiteKingCoordinates = new int[NUM_OF_PLAYERS];
+    static int[] blackKingCoordinates = new int[NUM_OF_PLAYERS];
     GameHandler(){
-        if(playerWhite == null) playerWhite = new Player(1, true);
-        if(playerBlack == null) playerBlack = new Player(0, false);
+        if(playerWhite == null) playerWhite = new Player(WHITE_COLOR, true);
+        if(playerBlack == null) playerBlack = new Player(BLACK_COLOR, false);
     }
 
     public List<Piece> getPlayerWhitePieces() {

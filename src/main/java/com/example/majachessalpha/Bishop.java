@@ -16,13 +16,13 @@ public class Bishop extends Piece{
         super(pane);
         this.value = 3;
         //set color of the image
-        if(color == 1){
+        if(color == WHITE_COLOR){
             pieceImage = loadImage("img/bishopW.png");
-            this.color = 1;
+            this.color = WHITE_COLOR;
             this.pieceChar = 'B';
         } else{
             pieceImage = loadImage("img/bishopB.png");
-            this.color = 0;
+            this.color = BLACK_COLOR;
             this.pieceChar = 'b';
         }
 

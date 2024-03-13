@@ -18,13 +18,13 @@ public class Rook extends Piece {
         super(pane);
         this.value = 5;
         //set color of the image
-        if(color == 1){
+        if(color == WHITE_COLOR){
             pieceImage = loadImage("img/rookW.png");
-            this.color = 1;
+            this.color = WHITE_COLOR;
             pieceChar = 'R';
         } else{
             pieceImage = loadImage("img/rookB.png");
-            this.color = 0;
+            this.color = BLACK_COLOR;
             pieceChar = 'r';
         }
         isFirstMove = true;

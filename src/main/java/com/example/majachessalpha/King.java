@@ -18,13 +18,13 @@ public class King extends Piece{
         super(pane);
         this.value = 1000;
         //set color of the image
-        if(color == 1){
+        if(color == WHITE_COLOR){
             pieceImage = loadImage("img/kingW.png");
-            this.color = 1;
+            this.color = WHITE_COLOR;
             this.pieceChar = 'K';
         } else{
             pieceImage = loadImage("img/kingB.png");
-            this.color = 0;
+            this.color = BLACK_COLOR;
             this.pieceChar = 'k';
         }
         isFirstMove = true;

@@ -17,13 +17,13 @@ public class Queen extends Piece{
         super(pane);
         this.value = 9;
         //set color of the image
-        if(color == 1){
+        if(color == WHITE_COLOR){
             pieceImage = loadImage("img/queenW.png");
-            this.color = 1;
+            this.color = WHITE_COLOR;
             this.pieceChar = 'Q';
         } else{
             pieceImage = loadImage("img/queenB.png");
-            this.color = 0;
+            this.color = BLACK_COLOR;
             this.pieceChar = 'q';
         }
 

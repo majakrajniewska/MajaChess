@@ -18,13 +18,13 @@ public class Pawn extends Piece {
         super(pane);
         this.value = 1;
         //set color of image
-        if(color == 1){
+        if(color == WHITE_COLOR){
             pieceImage = loadImage("img/pawnW.png");
-            this.color = 1;
+            this.color = WHITE_COLOR;
             this.pieceChar = 'P';
         } else{
             pieceImage = loadImage("img/pawnB.png");
-            this.color = 0;
+            this.color = BLACK_COLOR;
             this.pieceChar = 'p';
         }
 
@@ -47,7 +47,7 @@ public class Pawn extends Piece {
             }
         }
         //allowing to go one square or capture another piece
-        if(color == 1){
+        if(color == WHITE_COLOR){
             if(currentY == startY-1 && isHorizontal() && isSquareEmpty(currentX, currentY)){
                 return true;
             } else if (canDoUnPassant() && currentY == 2 && (currentX == startX-1 || currentX == startX+1)){
@@ -79,7 +79,7 @@ public class Pawn extends Piece {
 
     public List<int[]> generateLegalMoves() {
         legalMoves.clear();
-        if(color == 1){
+        if(color == WHITE_COLOR){
             if(isFirstMove() && isSquareEmpty(startX, startY-1) && isSquareEmpty(startX, startY-2))
                 legalMoves.add(new int[]{startX, startY-2});
             if(isValidSquare(startX, startY-1) && isSquareEmpty(startX, startY-1))
@@ -109,7 +109,7 @@ public class Pawn extends Piece {
     //doesn't have un passant yet
     public List<int[]> generateLegalMovesWithCheck() {
         legalMoves.clear();
-        if(color == 1){
+        if(color == WHITE_COLOR){
             if(isFirstMove() && isSquareEmpty(startX, startY-1) && isSquareEmpty(startX, startY-2) && isValidMoveWithCheck(startX, startY-2))
                 legalMoves.add(new int[]{startX, startY - 2});
             if(isValidSquare(startX, startY-1) && isSquareEmpty(startX, startY-1) && isValidMoveWithCheck(startX, startY-1))
@@ -136,20 +136,20 @@ public class Pawn extends Piece {
     }
 
     public boolean isFirstMove(){
-        if(color == 1)
+        if(color == WHITE_COLOR)
             return startY == 6;
         else
             return startY == 1;
     }
     public boolean canDoUnPassant(){
-        if(color==1 && startY==3){
+        if(color==WHITE_COLOR && startY==3){
             Move lastMove = getLastMove();
             Piece lastMovedPiece = lastMove.getPiece();
             return (lastMovedPiece.getPieceChar() == 'p') &&
                     (lastMovedPiece.currentY == 3) &&
                     (lastMovedPiece.currentX == this.currentX - 1 || lastMovedPiece.currentX == this.currentX + 1) &&
                     (lastMovedPiece.startY == 1);
-        } else if(color==0 && startY==4){
+        } else if(color==BLACK_COLOR && startY==4){
             Move lastMove = getLastMove();
             Piece lastMovedPiece = lastMove.getPiece();
             return (lastMovedPiece.getPieceChar() == 'P') &&

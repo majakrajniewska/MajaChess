@@ -27,13 +27,13 @@ public class Knight extends Piece {
         super(pane);
         this.value = 3;
         //set color of the image
-        if(color == 1){
+        if(color == WHITE_COLOR){
             pieceImage = loadImage("img/knightW.png");
-            this.color = 1;
+            this.color = WHITE_COLOR;
             this.pieceChar = 'N';
         } else{
             pieceImage = loadImage("img/knightB.png");
-            this.color = 0;
+            this.color = BLACK_COLOR;
             this.pieceChar = 'n';
         }
 
