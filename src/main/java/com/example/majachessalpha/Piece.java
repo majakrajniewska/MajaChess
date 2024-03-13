@@ -515,6 +515,8 @@ public abstract class Piece extends GridBase{
         return historyOfMoves;
     }
     public static Move getLastMove(){
-        return historyOfMoves.getLast();
+        Move lastMove = historyOfMoves.lastElement();
+        if(!historyOfMoves.isEmpty()) historyOfMoves.remove(historyOfMoves.size()-1);
+        return lastMove;
     }
 }
