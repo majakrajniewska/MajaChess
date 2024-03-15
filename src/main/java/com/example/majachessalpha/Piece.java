@@ -9,25 +9,27 @@ import java.net.URL;
 import java.util.*;
 //UNPASSANT DZIALA TYLKO CZARNY W LEWO I NIE USUWA BIALEGO PIONKA
 public abstract class Piece extends GridBase{
+    //PIECE
     private boolean color;
     private int value;
     private char pieceChar;
+    //PIECEHANDLER
     double mouseAnchorX;
     double mouseAnchorY;
     //coordinates from which piece starts its move
-    int startX, startY;
+    private Point startPoint;
     //coordinates where piece ends its move (if its possible)
-    int currentX, currentY;
+    private Point newPoint;
 
     //saving last removed piece
     Deque<Piece> stackRemovedPiece = new LinkedList<>();
-    static int[] whiteKingCoordinates;
-    static int[] blackKingCoordinates;
+    static Point whiteKingPoint;
+    static Point blackKingPoint;
 
     List<int[]> legalMoves = new ArrayList<>();
 
     static char[][] charBoard;
-    static char[][] previousCharBoard = new char[8][8];
+    static char[][] previousCharBoard = new char[BOARD_WIDTH][BOARD_LENGTH];
     private static List<Piece> playerWhitePieces;
     private static List<Piece> playerBlackPieces;
     //we need to have 50 last moves to check if it's a tie and if un passant is legal
@@ -38,8 +40,11 @@ public abstract class Piece extends GridBase{
         if(charBoard == null) charBoard = getBoard();
         if(playerBlackPieces == null) playerBlackPieces = getPlayerBlackPieces();
         if(playerWhitePieces == null) playerWhitePieces = getPlayerWhitePieces();
-        if(whiteKingCoordinates == null) whiteKingCoordinates = getWhiteKingCoordinates();
-        if(blackKingCoordinates == null) blackKingCoordinates = getBlackKingCoordinates();
+        if(whiteKingPoint == null) whiteKingPoint = getWhiteKingPoint();
+        if(blackKingPoint == null) blackKingPoint = getBlackKingPoint();
+
+        startPoint = new Point();
+        newPoint = new Point();
     }
 
     public Piece(boolean color, AnchorPane pane){
@@ -47,9 +52,20 @@ public abstract class Piece extends GridBase{
         if(charBoard == null) charBoard = getBoard();
         if(playerBlackPieces == null) playerBlackPieces = getPlayerBlackPieces();
         if(playerWhitePieces == null) playerWhitePieces = getPlayerWhitePieces();
-        if(whiteKingCoordinates == null) whiteKingCoordinates = getWhiteKingCoordinates();
-        if(blackKingCoordinates == null) blackKingCoordinates = getBlackKingCoordinates();
+        if(whiteKingPoint == null) whiteKingPoint = getWhiteKingPoint();
+        if(blackKingPoint == null) blackKingPoint = getBlackKingPoint();
         this.color = color;
+
+        startPoint = new Point();
+        newPoint = new Point();
+    }
+
+    public Point getStartPoint() {
+        return startPoint;
+    }
+
+    public Point getNewPoint() {
+        return newPoint;
     }
 
     public Image loadImage(String path){
@@ -80,8 +96,8 @@ public abstract class Piece extends GridBase{
             mouseAnchorY = mouseEvent.getSceneY();
 
             //board[x/80][y/80]
-            startX = (int) ((mouseAnchorX/getGridSize()) % BOARD_WIDTH);
-            startY = (int) ((mouseAnchorY/getGridSize()) % BOARD_LENGTH);
+            startPoint.setX((int) ((mouseAnchorX/getGridSize()) % BOARD_WIDTH));
+            startPoint.setY((int) ((mouseAnchorY/getGridSize()) % BOARD_LENGTH));
         });
         //set new coordinates
         pieceImageView.setOnMouseDragged(mouseEvent -> {
@@ -92,39 +108,37 @@ public abstract class Piece extends GridBase{
             int x = (int) ((mouseAnchorX/getGridSize()) % BOARD_WIDTH);
             int y = (int) ((mouseAnchorY/getGridSize()) % BOARD_LENGTH);
 
-            setCurrentCoordinates(x, y);
-            setImageSquare(pieceImageView, this.currentX, this.currentY);
+            newPoint.setPoint(x, y);
+            setImageSquare(pieceImageView, newPoint);
         });
         //validate new coordinates
         pieceImageView.setOnMouseReleased(mouseEvent -> {
             //if move is valid - make move
             if(isPlayerTurn()){
                 if(canCastle()){
-                    Move move = new Move(getCurrentPiece(getPieceChar()), startX, startY, currentX, currentY);
+                    Move move = new Move(getCurrentPiece(getPieceChar()), startPoint, newPoint);
                     historyOfMoves.add(move);
-                    move.printMove();
-                    setImageSquare(pieceImageView, this.currentX, this.currentY);
+                    setImageSquare(pieceImageView, newPoint);
                     castle();
                     if(isMate()) mate();
                     nextPlayersTurn();
                 }
                 else if(isValidMoveWithCheck()){
-                    Move move = new Move(getCurrentPiece(getPieceChar()), startX, startY, currentX, currentY);
+                    Move move = new Move(getCurrentPiece(getPieceChar()), startPoint, newPoint);
                     historyOfMoves.add(move);
-                    move.printMove();
                     printBoard(charBoard);
                     if(!stackRemovedPiece.isEmpty()){
                         getAnchorPane().getChildren().remove(stackRemovedPiece.pop().getPieceImage());
                     }
-                    setStartCoordinates(currentX, currentY);
+                    startPoint.copyPoint(newPoint);
                     if(isMate()) mate();
                     nextPlayersTurn();
                 }else {
-                    setImageSquare(pieceImageView, this.startX, this.startY);
+                    setImageSquare(pieceImageView, startPoint);
                 }
             }
              else {
-                setImageSquare(pieceImageView, this.startX, this.startY);
+                setImageSquare(pieceImageView, startPoint);
             }
         });
     }
@@ -145,7 +159,7 @@ public abstract class Piece extends GridBase{
             if(isCheck(previousCharBoard)) {
                 copyCharBoard(previousCharBoard, charBoard);
                 //if king did illegal move - set coordinates to previous ones
-                switchKingCoordinates(startX, startY);
+                switchKingPoint(startPoint);
                 //if illegal capture has been made - add captured piece back
                 addDeletedPieceBack();
                 return false;
@@ -155,23 +169,44 @@ public abstract class Piece extends GridBase{
         return false;
     }
     //use only while generating moves, not when making them
-    public boolean isValidMoveWithCheck(int x, int y){
+    public boolean isValidMoveWithCheck(Point point){
         copyCharBoard(charBoard, previousCharBoard);
-        if(canCapture(x, y))
-            stackRemovedPiece.push(capture(x, y));
-        makeMove(x, y);
+        if(canCapture(point))
+            stackRemovedPiece.push(capture(point));
+        makeMove(point);
 
         //save current king coordinate and change them if needed
-        int[] tempKingCoordinates = switchAndSaveKingCoordinates(x, y);
+        Point tempKingPoint = switchAndSaveKingCoordinates(point);
 
         if(isCheck(previousCharBoard)) {
             addDeletedPieceBack();
-            switchKingCoordinates(tempKingCoordinates[0], tempKingCoordinates[1]);
+            switchKingPoint(tempKingPoint);
             copyCharBoard(previousCharBoard, charBoard);
             return false;
         }
         addDeletedPieceBack();
-        switchKingCoordinates(tempKingCoordinates[0], tempKingCoordinates[1]);
+        switchKingPoint(tempKingPoint);
+        copyCharBoard(previousCharBoard, charBoard);
+        return true;
+    }
+    public boolean isValidMoveWithCheck(int x, int y){
+        Point point = new Point(x, y);
+        copyCharBoard(charBoard, previousCharBoard);
+        if(canCapture(point))
+            stackRemovedPiece.push(capture(point));
+        makeMove(point);
+
+        //save current king coordinate and change them if needed
+        Point tempKingPoint = switchAndSaveKingCoordinates(point);
+
+        if(isCheck(previousCharBoard)) {
+            addDeletedPieceBack();
+            switchKingPoint(tempKingPoint);
+            copyCharBoard(previousCharBoard, charBoard);
+            return false;
+        }
+        addDeletedPieceBack();
+        switchKingPoint(tempKingPoint);
         copyCharBoard(previousCharBoard, charBoard);
         return true;
     }
@@ -186,41 +221,38 @@ public abstract class Piece extends GridBase{
         }
     }
 
+    //MOVE TO MOVE
     public void makeMove(){
         //updating char board
-        charBoard[startX][startY] = '.';
-        charBoard[currentX][currentY] = getPieceChar();
+        charBoard[startPoint.getX()][startPoint.getY()] = '.';
+        charBoard[newPoint.getX()][newPoint.getY()] = getPieceChar();
         //if king has been moved - change its coordinates
-        switchKingCoordinates(currentX, currentY);
+        switchKingPoint(newPoint);
     }
-    public void makeMove(int x, int y){
+    public void makeMove(Point point){
         //updating char board
-        charBoard[startX][startY] = '.';
-        charBoard[x][y] = getPieceChar();
+        charBoard[startPoint.getX()][startPoint.getY()] = '.';
+        charBoard[point.getX()][point.getY()] = getPieceChar();
     };
 
-    public int[] switchAndSaveKingCoordinates(int x, int y){
-        int[] startCoordinates = new int[2];
+    public Point switchAndSaveKingCoordinates(Point point){
+        Point startPoint = new Point();
         //if king has been moved - change its coordinates
         if(getPieceChar()=='K'){
-            startCoordinates = whiteKingCoordinates.clone();
-            whiteKingCoordinates[0] = x;
-            whiteKingCoordinates[1] = y;
+            startPoint.copyPoint(whiteKingPoint);
+            whiteKingPoint.setPoint(point.getX(), point.getY());
         } else if(getPieceChar()=='k'){
-            startCoordinates = blackKingCoordinates.clone();
-            blackKingCoordinates[0] = x;
-            blackKingCoordinates[1] = y;
+            startPoint.copyPoint(blackKingPoint);
+            blackKingPoint.setPoint(point.getX(), point.getY());
         }
-        return startCoordinates;
+        return startPoint;
     }
-    public void switchKingCoordinates(int x, int y){
+    public void switchKingPoint(Point point){
         //if king has been moved - change its coordinates
         if(getPieceChar()=='K'){
-            whiteKingCoordinates[0] = x;
-            whiteKingCoordinates[1] = y;
+            whiteKingPoint.setPoint(point.getX(), point.getY());
         } else if(getPieceChar()=='k'){
-            blackKingCoordinates[0] = x;
-            blackKingCoordinates[1] = y;
+            blackKingPoint.setPoint(point.getX(), point.getY());
         }
     }
 
@@ -239,9 +271,9 @@ public abstract class Piece extends GridBase{
         this.value = value;
     }
 
-    public void setImageSquare(ImageView img, int x, int y){
-        img.setLayoutX(x * getGridSize() - img.getX());
-        img.setLayoutY(y * getGridSize() - img.getY());
+    public void setImageSquare(ImageView img, Point point){
+        img.setLayoutX(point.getX() * getGridSize() - img.getX());
+        img.setLayoutY(point.getY() * getGridSize() - img.getY());
     }
     public abstract ImageView getPieceImage();
     public Piece getCurrentPiece(char pieceChar){
@@ -259,30 +291,21 @@ public abstract class Piece extends GridBase{
         return null;
     }
 
-    public void setCurrentCoordinates(int currentX, int currentY) {
-        this.currentX = currentX;
-        this.currentY = currentY;
-    }
-    public void setStartCoordinates(int startX, int startY) {
-        this.startX = startX;
-        this.startY = startY;
-    }
-
     //remove instance of Piece from Player
     public Piece capture(){ //start, current
-        if(Character.isUpperCase(previousCharBoard[startX][startY]) &&
-            Character.isLowerCase(previousCharBoard[currentX][currentY])){
+        if(Character.isUpperCase(previousCharBoard[startPoint.getX()][startPoint.getY()]) &&
+            Character.isLowerCase(previousCharBoard[newPoint.getX()][newPoint.getY()])){
             for(Piece piece : playerBlackPieces){
-                if(piece.startX == currentX && piece.startY == currentY){
+                if(piece.startPoint.getX() == newPoint.getX() && piece.startPoint.getY() == newPoint.getY()){
                     playerBlackPieces.remove(piece);
                     return piece;
                 }
             }
         }
-        else if(Character.isLowerCase(previousCharBoard[startX][startY]) &&
-            Character.isUpperCase(previousCharBoard[currentX][currentY])){
+        else if(Character.isLowerCase(previousCharBoard[startPoint.getX()][startPoint.getY()]) &&
+            Character.isUpperCase(previousCharBoard[newPoint.getX()][newPoint.getY()])){
             for(Piece piece : playerWhitePieces){
-                if(piece.startX == currentX && piece.startY == currentY){
+                if(piece.startPoint.getX() == newPoint.getX() && piece.startPoint.getY() == newPoint.getY()){
                     playerWhitePieces.remove(piece);
                     return piece;
                 }
@@ -290,20 +313,20 @@ public abstract class Piece extends GridBase{
         }
         return null;
     }
-    public Piece capture(int x, int y){
-        if(Character.isUpperCase(charBoard[startX][startY]) &&
-            Character.isLowerCase(charBoard[x][y])){
+    public Piece capture(Point point){
+        if(Character.isUpperCase(charBoard[startPoint.getX()][startPoint.getY()]) &&
+            Character.isLowerCase(charBoard[point.getX()][point.getY()])){
             for(Piece piece : playerBlackPieces){
-                if(piece.startX == x && piece.startY == y){
+                if(piece.startPoint.getX() == point.getX() && piece.startPoint.getY() == point.getY()){
                     playerBlackPieces.remove(piece);
                     return piece;
                 }
             }
         }
-        else if(Character.isLowerCase(charBoard[startX][startY]) &&
-                Character.isUpperCase(charBoard[x][y])){
+        else if(Character.isLowerCase(charBoard[startPoint.getX()][startPoint.getY()]) &&
+                Character.isUpperCase(charBoard[point.getX()][point.getY()])){
             for(Piece piece : playerWhitePieces){
-                if(piece.startX == x && piece.startY == y){
+                if(piece.startPoint.getX() == point.getX() && piece.startPoint.getY() == point.getY()){
                     playerWhitePieces.remove(piece);
                     return piece;
                 }
@@ -312,68 +335,69 @@ public abstract class Piece extends GridBase{
         return null;
     }
 
-    //MOVEMENT VALIDATION
+    //MOVEMENT VALIDATION - MOVE TO MOVE
     public boolean isHorizontal(){
-        return startY != currentY && startX == currentX;
+        return startPoint.getY() != newPoint.getY() && startPoint.getX() == newPoint.getX();
     }
     public boolean isVertical(){
-        return startY == currentY && startX != currentX;
+        return startPoint.getY() == newPoint.getY() && startPoint.getX() != newPoint.getX();
     }
     public boolean isDiagonal(){
-        return startX - startY == currentX - currentY || startY + startX == currentX + currentY;
+        return (startPoint.getX() - startPoint.getY() == newPoint.getX() - newPoint.getY() ||
+                startPoint.getY() + startPoint.getX() == newPoint.getX() + newPoint.getY());
     }
     public boolean isNotBlocked(){
         //vertical
-        if(startY == currentY){
-            if(startX < currentX) {
-                for (int i = startX + 1; i < currentX; i++)
-                    if (charBoard[i][startY] != '.') return false;
+        if(startPoint.getY() == newPoint.getY()){
+            if(startPoint.getX() < newPoint.getX()) {
+                for (int i = startPoint.getX() + 1; i < newPoint.getX(); i++)
+                    if (charBoard[i][startPoint.getY()] != '.') return false;
             }
             else {
-                for (int j = currentX + 1; j < startX; j++)
-                    if (charBoard[j][startY] != '.') return false;
+                for (int j = newPoint.getX() + 1; j < startPoint.getX(); j++)
+                    if (charBoard[j][startPoint.getY()] != '.') return false;
             }
         } //horizontal
-        else if(startX == currentX){
-            if(startY < currentY) {
-                for (int i = startY + 1; i < currentY; i++)
-                    if (charBoard[startX][i] != '.') return false;
+        else if(startPoint.getX() == newPoint.getX()){
+            if(startPoint.getY() < newPoint.getY()) {
+                for (int i = startPoint.getX() + 1; i < newPoint.getY(); i++)
+                    if (charBoard[startPoint.getX()][i] != '.') return false;
             }
             else {
-                for (int j = currentY + 1; j < startY; j++)
-                    if (charBoard[startX][j] != '.') return false;
+                for (int j = newPoint.getY() + 1; j < startPoint.getY(); j++)
+                    if (charBoard[startPoint.getX()][j] != '.') return false;
             }
         } // diagonal
-        else if(startX - startY == currentX - currentY){
-            if(startY < currentY) {
-                int tempX = startX+1, tempY = startY+1;
-                while (tempX!= currentX){
+        else if(startPoint.getX() - startPoint.getY() == newPoint.getX() - newPoint.getY()){
+            if(startPoint.getY() < newPoint.getY()) {
+                int tempX = startPoint.getX() + 1, tempY = startPoint.getY() + 1;
+                while (tempX!= newPoint.getX()){
                     if (charBoard[tempX][tempY] != '.') return false;
                     tempX++;
                     tempY++;
                 }
             }
             else {
-                int tempX = startX-1, tempY = startY-1;
-                while (tempX!= currentX){
+                int tempX = startPoint.getX() - 1, tempY = startPoint.getY() - 1;
+                while (tempX!= newPoint.getX()){
                     if (charBoard[tempX][tempY] != '.') return false;
                     tempX--;
                     tempY--;
                 }
             }
         } //second diagonal
-        else if(startX + startY == currentX + currentY){
-            if(startY < currentY) {
-                int tempX = startX-1, tempY = startY+1;
-                while (tempX!= currentX){
+        else if(startPoint.getX() + startPoint.getY() == newPoint.getX() + newPoint.getY()){
+            if(startPoint.getY() < newPoint.getY()) {
+                int tempX = startPoint.getX()-1, tempY = startPoint.getY()+1;
+                while (tempX!= newPoint.getX()){
                     if (charBoard[tempX][tempY] != '.') return false;
                     tempX--;
                     tempY++;
                 }
             }
             else {
-                int tempX = startX+1, tempY = startY-1;
-                while (tempX!= currentX){
+                int tempX = startPoint.getX()+1, tempY = startPoint.getY()-1;
+                while (tempX!= newPoint.getX()){
                     if (charBoard[tempX][tempY] != '.') return false;
                     tempX++;
                     tempY--;
@@ -384,31 +408,44 @@ public abstract class Piece extends GridBase{
         return isSquareAvailable();
     }
     public boolean isSquareAvailable(){
-        return !((Character.isUpperCase(charBoard[startX][startY]) &&
-                Character.isUpperCase(charBoard[currentX][currentY])) ||
-                (Character.isLowerCase(charBoard[startX][startY]) &&
-                Character.isLowerCase(charBoard[currentX][currentY])));
+        return !((Character.isUpperCase(charBoard[startPoint.getX()][startPoint.getY()]) &&
+                Character.isUpperCase(charBoard[newPoint.getX()][newPoint.getY()])) ||
+                (Character.isLowerCase(charBoard[startPoint.getX()][startPoint.getY()]) &&
+                Character.isLowerCase(charBoard[newPoint.getX()][newPoint.getY()])));
     }
     public boolean canCapture(){
-        return ((Character.isUpperCase(charBoard[startX][startY]) &&
-                Character.isLowerCase(charBoard[currentX][currentY])) ||
-                (Character.isLowerCase(charBoard[startX][startY]) &&
-                Character.isUpperCase(charBoard[currentX][currentY])));
+        return ((Character.isUpperCase(charBoard[startPoint.getX()][startPoint.getY()]) &&
+                Character.isLowerCase(charBoard[newPoint.getX()][newPoint.getY()])) ||
+                (Character.isLowerCase(charBoard[startPoint.getX()][startPoint.getY()]) &&
+                Character.isUpperCase(charBoard[newPoint.getX()][newPoint.getY()])));
     }
-    public boolean canCapture(int x, int y){
-        return ((Character.isUpperCase(charBoard[startX][startY]) &&
-                Character.isLowerCase(charBoard[x][y])) ||
-                (Character.isLowerCase(charBoard[startX][startY]) &&
-                Character.isUpperCase(charBoard[x][y])));
+    public boolean canCapture(Point point){
+        return ((Character.isUpperCase(charBoard[startPoint.getX()][startPoint.getY()]) &&
+                Character.isLowerCase(charBoard[point.getX()][point.getY()])) ||
+                (Character.isLowerCase(charBoard[startPoint.getX()][startPoint.getY()]) &&
+                Character.isUpperCase(charBoard[point.getX()][point.getY()])));
     }
 
 
     //GENERATING LEGAL MOVES
+    public boolean isValidSquare(Point point){
+        return point.getX() >= 0 && point.getX() <= 7 && point.getY() >= 0 && point.getY() <= 7;
+    }
     public boolean isValidSquare(int x, int y){
         return x >= 0 && x <= 7 && y >= 0 && y <= 7;
     }
+    public boolean isSquareEmpty(Point point){
+        return charBoard[point.getX()][point.getY()] == '.';
+    }
     public boolean isSquareEmpty(int x, int y){
         return charBoard[x][y] == '.';
+    }
+    public boolean isSquareOccupied(Point point, boolean playerColor){
+        if(playerColor){
+            return Character.isLowerCase(charBoard[point.getX()][point.getY()]);
+        } else{
+            return Character.isUpperCase(charBoard[point.getX()][point.getY()]);
+        }
     }
     public boolean isSquareOccupied(int x, int y, boolean playerColor){
         if(playerColor){
@@ -428,16 +465,16 @@ public abstract class Piece extends GridBase{
 
     //CHECK AND MATE
     public boolean isCheck(char[][] board){
-        if(Character.isUpperCase(board[startX][startY])){ //ZMIEŃ TO
+        if(Character.isUpperCase(board[startPoint.getX()][startPoint.getY()])){
             for(Piece p : playerBlackPieces){
                 for(int[] move : p.generateLegalMoves())
-                    if(move[0] == whiteKingCoordinates[0] && move[1] == whiteKingCoordinates[1]) return true;
+                    if(move[0] == whiteKingPoint.getX() && move[1] == whiteKingPoint.getY()) return true;
 
             }}
         else{
             for(Piece p : playerWhitePieces){
                 for(int[] move : p.generateLegalMoves())
-                    if(move[0] == blackKingCoordinates[0] && move[1] == blackKingCoordinates[1]) return true;
+                    if(move[0] == blackKingPoint.getX() && move[1] == blackKingPoint.getY()) return true;
 
             }
         }
@@ -478,48 +515,48 @@ public abstract class Piece extends GridBase{
     public boolean canCastle(){
         return isValidMove() &&
                 (getPieceChar() == 'k' || getPieceChar() == 'K') &&
-                (currentX == startX - 2 || currentX == startX + 2);
+                (newPoint.getX() == startPoint.getX() - 2 || newPoint.getX() == startPoint.getX() + 2);
     }
     public void castle(){
         //switch king and rook (charboard & GUI)
         if(!whitePiece()){
-            if(currentX < startX){
-                switchKingAndRookBlack(startX - 4, startX - 1);
+            if(newPoint.getX() < startPoint.getX()){
+                switchKingAndRookBlack(startPoint.getX() - 4, startPoint.getX() - 1);
             } else{
-                switchKingAndRookBlack(startX + 3, startX + 1);
+                switchKingAndRookBlack(startPoint.getX() + 3, startPoint.getX() + 1);
             }
         } else{
-            if(currentX < startX){
-                switchKingAndRookWhite(startX - 4, startX - 1);
+            if(newPoint.getX() < startPoint.getX()){
+                switchKingAndRookWhite(startPoint.getX() - 4, startPoint.getX() - 1);
             } else{
-                switchKingAndRookWhite(startX + 3, startX + 1);
+                switchKingAndRookWhite(startPoint.getX() + 3, startPoint.getX() + 1);
             }
         }
     }
     public void switchKingAndRookWhite(int startRookX, int newRookX){
         for(Rook rook:getPlayerWhiteRooks()){
-            if(rook.startX == startRookX){
-                charBoard[rook.startX][rook.startY] = '.';
-                charBoard[newRookX][rook.startY] = 'R';
-                charBoard[startX][startY] = '.';
-                charBoard[currentX][currentY] = 'K';
-                rook.startX = newRookX;
-                switchKingCoordinates(currentX, currentY);
-                setImageSquare(rook.getPieceImage(), newRookX, this.currentY);
+            if(rook.getStartPoint().getX() == startRookX){
+                charBoard[rook.getStartPoint().getX()][rook.getStartPoint().getY()] = '.';
+                charBoard[newRookX][rook.getStartPoint().getY()] = 'R';
+                charBoard[startPoint.getX()][startPoint.getY()] = '.';
+                charBoard[newPoint.getX()][newPoint.getY()] = 'K';
+                rook.getStartPoint().setX(newRookX);
+                switchKingPoint(newPoint);
+                setImageSquare(rook.getPieceImage(), new Point(newRookX, newPoint.getY()));
                 break;
             }
         }
     }
     public void switchKingAndRookBlack(int startRookX, int newRookX){
         for(Rook rook:getPlayerBlackRooks()){
-            if(rook.startX == startRookX){
-                charBoard[rook.startX][rook.startY] = '.';
-                charBoard[newRookX][rook.startY] = 'r';
-                charBoard[startX][startY] = '.';
-                charBoard[currentX][currentY] = 'k';
-                rook.startX = newRookX;
-                switchKingCoordinates(currentX, currentY);
-                setImageSquare(rook.getPieceImage(), newRookX, this.currentY);
+            if(rook.getStartPoint().getX() == startRookX){
+                charBoard[rook.getStartPoint().getX()][rook.getStartPoint().getY()] = '.';
+                charBoard[newRookX][rook.getStartPoint().getY()] = 'r';
+                charBoard[startPoint.getX()][startPoint.getY()] = '.';
+                charBoard[newPoint.getX()][newPoint.getY()] = 'k';
+                rook.getStartPoint().setX(newRookX);
+                switchKingPoint(newPoint);
+                setImageSquare(rook.getPieceImage(), new Point(newRookX, newPoint.getY()));
                 break;
             }
         }

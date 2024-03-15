@@ -13,8 +13,8 @@ public class GameHandler {
 
     static Player playerWhite;
     static Player playerBlack;
-    static int[] whiteKingCoordinates = new int[NUM_OF_PLAYERS];
-    static int[] blackKingCoordinates = new int[NUM_OF_PLAYERS];
+    static Point whiteKingPoint = new Point();
+    static Point blackKingPoint = new Point();
     GameHandler(){
         if(playerWhite == null) playerWhite = new Player(WHITE_COLOR, true);
         if(playerBlack == null) playerBlack = new Player(BLACK_COLOR, false);
@@ -35,11 +35,11 @@ public class GameHandler {
         return playerBlack.getPlayerRooks();
     }
 
-    public static int[] getWhiteKingCoordinates() {
-        return whiteKingCoordinates;
+    public static Point getWhiteKingPoint() {
+        return whiteKingPoint;
     }
-    public static int[] getBlackKingCoordinates() {
-        return blackKingCoordinates;
+    public static Point getBlackKingPoint() {
+        return blackKingPoint;
     }
 
     public void nextPlayersTurn(){

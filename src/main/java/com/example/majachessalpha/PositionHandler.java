@@ -13,8 +13,8 @@ public class PositionHandler extends GridBase{
     //for castle
     private static List<Rook> playerWhiteRooks;
     private static List<Rook> playerBlackRooks;
-    private static int[] whiteKingCoordinates;
-    private static int[] blackKingCoordinates;
+    private static Point whiteKingPoint;
+    private static Point blackKingPoint;
 
     public PositionHandler(AnchorPane pane) {
         super(pane);
@@ -22,8 +22,8 @@ public class PositionHandler extends GridBase{
         if(boardImageView == null) boardImageView = getBoardImageViews();
         if(playerBlackPieces == null) playerBlackPieces = getPlayerBlackPieces();
         if(playerWhitePieces == null) playerWhitePieces = getPlayerWhitePieces();
-        if(whiteKingCoordinates == null) whiteKingCoordinates = getWhiteKingCoordinates();
-        if(blackKingCoordinates == null) blackKingCoordinates = getBlackKingCoordinates();
+        if(whiteKingPoint == null) whiteKingPoint = getWhiteKingPoint();
+        if(blackKingPoint == null) blackKingPoint = getBlackKingPoint();
 
         //for castle
         if(playerBlackRooks == null) playerBlackRooks = getPlayerBlackRooks();
@@ -94,16 +94,14 @@ public class PositionHandler extends GridBase{
                     case 'k' -> {
                         King piece = new King(BLACK_COLOR, pane);
                         setPieceGraphic(piece.getPieceImage(), getAnchorPane(), square, fen.charAt(i), piece);
-                        blackKingCoordinates[0] = square%8;
-                        blackKingCoordinates[1] = square/8;
+                        blackKingPoint.setPoint(square%8, square/8);
                         square+=1;
                         playerBlackPieces.add(piece);
                     }
                     case 'K' -> {
                         King piece = new King(WHITE_COLOR, pane);
                         setPieceGraphic(piece.getPieceImage(), getAnchorPane(), square, fen.charAt(i), piece);
-                        whiteKingCoordinates[0] = square%8;
-                        whiteKingCoordinates[1] = square/8;
+                        whiteKingPoint.setPoint(square%8, square/8);
                         square+=1;
                         playerWhitePieces.add(piece);
                     }
@@ -128,8 +126,8 @@ public class PositionHandler extends GridBase{
         if(square < SQUARES_AMOUNT){
             charBoard[square%BOARD_WIDTH][square/BOARD_LENGTH] = charAtI;
             boardImageView[square%BOARD_WIDTH][square/BOARD_LENGTH] = image;
-            piece.startX = square%BOARD_WIDTH;
-            piece.startY = square/BOARD_LENGTH;
+
+            piece.getStartPoint().setPoint(square%BOARD_WIDTH, square/BOARD_LENGTH);
 
             image.setX((square%BOARD_WIDTH)*getGridSize());
             image.setY((square/BOARD_LENGTH)*getGridSize());

@@ -54,8 +54,8 @@ public class Rook extends Piece {
         for (int[] direction : directions) {
             int dx = direction[0];
             int dy = direction[1];
-            int x = startX + dx;
-            int y = startY + dy;
+            int x = getStartPoint().getX() + dx;
+            int y = getStartPoint().getY() + dy;
 
             while (isValidSquare(x, y)) {
 
@@ -87,8 +87,8 @@ public class Rook extends Piece {
         for (int[] direction : directions) {
             int dx = direction[0];
             int dy = direction[1];
-            int x = startX + dx;
-            int y = startY + dy;
+            int x = getStartPoint().getX() + dx;
+            int y = getStartPoint().getY() + dy;
 
             while (isValidSquare(x, y)) {
                 if (isSquareEmpty(x, y) && isValidMoveWithCheck(x, y)) {

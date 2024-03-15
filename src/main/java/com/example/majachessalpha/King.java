@@ -43,13 +43,13 @@ public class King extends Piece{
     //Validating the move
     @Override
     public boolean isValidMove(){
-        int deltaX = Math.abs(startX - currentX);
-        int deltaY = Math.abs(startY - currentY);
+        int deltaX = Math.abs(getStartPoint().getX() - getNewPoint().getX());
+        int deltaY = Math.abs(getStartPoint().getY() - getNewPoint().getY());
         if ((deltaX + deltaY <= 1 || deltaX <= 1 && deltaY <= 1) && isSquareAvailable()){
             isFirstMove = false;
             return true;
         }
-        if(isValidCastle(currentX)){
+        if(isValidCastle(getNewPoint().getX())){
             isFirstMove = false;
             return true;
         }
@@ -60,8 +60,8 @@ public class King extends Piece{
         legalMoves.clear();
 
         for (int[] move : movement) {
-            int x = startX - move[0];
-            int y = startY - move[1];
+            int x = getStartPoint().getX() - move[0];
+            int y = getStartPoint().getY() - move[1];
 
             if (isValidSquare(x, y) && (isSquareEmpty(x, y) || isSquareOccupied(x, y, whitePiece()))){
                 legalMoves.add(new int[]{x, y});
@@ -75,58 +75,60 @@ public class King extends Piece{
         legalMoves.clear();
 
         for (int[] move : movement) {
-            int x = startX - move[0];
-            int y = startY - move[1];
+            int x = getStartPoint().getX() - move[0];
+            int y = getStartPoint().getY() - move[1];
 
             if (isValidSquare(x, y) && isValidMoveWithCheck(x, y) && (isSquareEmpty(x, y) || isSquareOccupied(x, y, whitePiece()))){
                 legalMoves.add(new int[]{x, y});
             }
         }
-        if(isValidCastle(startX-2)) legalMoves.add(new int[]{startX-2, startY});
-        if(isValidCastle(startX+2)) legalMoves.add(new int[]{startX+2, startY});
+        if(isValidCastle(getStartPoint().getX()-2))
+            legalMoves.add(new int[]{getStartPoint().getX()-2, getStartPoint().getY()});
+        if(isValidCastle(getStartPoint().getX()+2))
+            legalMoves.add(new int[]{getStartPoint().getX()+2, getStartPoint().getY()});
         return legalMoves;
     }
 
-    //targetX: startX-2 or startX+2
+    //targetX: getStartPoint().getX()-2 or getStartPoint().getX()+2
     public boolean isValidCastle(int targetX){
         if(isFirstMove){
-            if(targetX == startX-2){
+            if(targetX == getStartPoint().getX()-2){
                 //player black
-                if(startY == 0){
+                if(getStartPoint().getY() == 0){
                     for(Rook rook : getPlayerBlackRooks()){
-                        if(rook.startX == startX-4) {
+                        if(rook.getStartPoint().getX() == getStartPoint().getX()-4) {
                             return rook.isFirstMove() &&
-                                    !isPieceBetweenRookAndKing(startX - 4) &&
+                                    !isPieceBetweenRookAndKing(getStartPoint().getX() - 4) &&
                                     !isCheckWhileCastle();
                         }
                     }
                 }
                 //player white
-                else if(startY == 7){
+                else if(getStartPoint().getY() == 7){
                     for(Rook rook : getPlayerWhiteRooks()){
-                        if(rook.startX == startX-4) {
+                        if(rook.getStartPoint().getX() == getStartPoint().getX()-4) {
                             return rook.isFirstMove() &&
-                                    !isPieceBetweenRookAndKing(startX - 4) &&
+                                    !isPieceBetweenRookAndKing(getStartPoint().getX() - 4) &&
                                     !isCheckWhileCastle();
                         }
                     }
                 }
             }
-            else if(targetX == startX + 2){
+            else if(targetX == getStartPoint().getX() + 2){
                 //player black
-                if(startY == 0){
+                if(getStartPoint().getY() == 0){
                     for(Rook rook : getPlayerBlackRooks()){
                             return rook.isFirstMove() &&
-                                !isPieceBetweenRookAndKing(startX+3) &&
+                                !isPieceBetweenRookAndKing(getStartPoint().getX()+3) &&
                                 !isCheckWhileCastle();
                     }
                 }
                 //player white
-                else if(startY == 7){
+                else if(getStartPoint().getY() == 7){
                     for(Rook rook : getPlayerWhiteRooks()){
-                        if(rook.startX == startX+3) {
+                        if(rook.getStartPoint().getX() == getStartPoint().getX()+3) {
                             return rook.isFirstMove() &&
-                                    !isPieceBetweenRookAndKing(startX + 3) &&
+                                    !isPieceBetweenRookAndKing(getStartPoint().getX() + 3) &&
                                     !isCheckWhileCastle();
                         }
                     }
@@ -137,35 +139,35 @@ public class King extends Piece{
     }
 
     public boolean isPieceBetweenRookAndKing(int rookX){
-        if(startX < rookX) {
-            for (int i = startX+1; i < rookX; i++)
-                if (charBoard[i][startY] != '.') return true;
+        if(getStartPoint().getX() < rookX) {
+            for (int i = getStartPoint().getX()+1; i < rookX; i++)
+                if (charBoard[i][getStartPoint().getY()] != '.') return true;
         }
         else {
-            for (int i = rookX+1; i < startX; i++)
-                if (charBoard[i][startY] != '.') return true;
+            for (int i = rookX+1; i < getStartPoint().getX(); i++)
+                if (charBoard[i][getStartPoint().getY()] != '.') return true;
         }
         return false;
     }
 
     public boolean isCheckWhileCastle(){    
         if(whitePiece()){
-            if(startX < currentX)
-                return loopPiecesBlack(startX, currentX);
+            if(getStartPoint().getX() < getNewPoint().getX())
+                return loopPiecesBlack(getStartPoint().getX(), getNewPoint().getX());
             else
-                return loopPiecesBlack(currentX, startX);
+                return loopPiecesBlack(getNewPoint().getX(), getStartPoint().getX());
         } else{
-            if(startX < currentX)
-                return loopPiecesWhite(startX, currentX);
+            if(getStartPoint().getX() < getNewPoint().getX())
+                return loopPiecesWhite(getStartPoint().getX(), getNewPoint().getX());
             else
-                return loopPiecesWhite(currentX, startX);
+                return loopPiecesWhite(getNewPoint().getX(), getStartPoint().getX());
         }
     }
     public boolean loopPiecesWhite(int start, int end){
         for(int x = start; x <= end; x++){
             for(Piece p : getPlayerWhitePieces()) {
                 for (int[] move : p.generateLegalMoves()) {
-                    if (move[0] == x && move[1] == blackKingCoordinates[1]) return true;
+                    if (move[0] == x && move[1] == blackKingPoint.getY()) return true;
                 }
             }
         }
@@ -175,7 +177,7 @@ public class King extends Piece{
         for(int x = start; x <= end; x++){
             for(Piece p : getPlayerBlackPieces()) {
                 for (int[] move : p.generateLegalMoves()) {
-                    if (move[0] == x && move[1] == whiteKingCoordinates[1]) return true;
+                    if (move[0] == x && move[1] == whiteKingPoint.getY()) return true;
                 }
             }
         }
