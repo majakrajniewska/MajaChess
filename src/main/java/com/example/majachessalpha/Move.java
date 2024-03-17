@@ -4,35 +4,19 @@ import java.util.Vector;
 
 public class Move {
     private Piece piece;
-    private int startX;
-    private int startY;
-    private int currentX;
-    private int currentY;
+    private Point startPoint;
+    private Point newPoint;
 
-    public Move(Piece piece, int startX, int startY, int curX, int curY) {
+    public Move(Piece piece, Point startPoint, Point newPoint) {
         this.piece = piece;
-        this.startX = startX;
-        this.startY = startY;
-        this.currentX = curX;
-        this.currentY = curY;
+        this.startPoint = startPoint;
+        this.newPoint = newPoint;
     }
 
-    public void printMove(){
-        System.out.println(piece.getPieceChar() + " move from X: " + startX + ", Y: " + startY + ", to X: " + currentX + ", Y: " + currentY);
-    }
+//    public void printMove(){
+//        System.out.println(piece.getPieceChar() + " move from X: " + getStartPoint().getX() + ", Y: " + getStartPoint().getY() + ", to X: " + getNewPoint().getX() + ", Y: " + currentY);
+//    }
     public Piece getPiece() {
         return piece;
-    }
-    public int getStartX() {
-        return startX;
-    }
-    public int getStartY() {
-        return startY;
-    }
-    public int getCurrentX() {
-        return currentX;
-    }
-    public int getCurrentY() {
-        return currentY;
     }
 }

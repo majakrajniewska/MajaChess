@@ -43,7 +43,9 @@ public class Knight extends Piece {
     @Override
     public boolean isValidMove(){
         for(int[] move : movement){
-            if(startX - currentX == move[0] && startY - currentY == move[1] && isSquareAvailable()){
+            if(getStartPoint().getX() - getNewPoint().getX() == move[0] &&
+                    getStartPoint().getY() - getNewPoint().getY() == move[1] &&
+                    isSquareAvailable()){
                 return true;
             }
         }
@@ -53,8 +55,8 @@ public class Knight extends Piece {
         legalMoves.clear();
 
         for (int[] move : movement) {
-            int x = startX - move[0];
-            int y = startY - move[1];
+            int x = getStartPoint().getX() - move[0];
+            int y = getStartPoint().getY() - move[1];
 
             if (isValidSquare(x, y) && (isSquareEmpty(x, y) || isSquareOccupied(x, y, whitePiece()))){
                 legalMoves.add(new int[]{x, y});
@@ -66,8 +68,8 @@ public class Knight extends Piece {
         legalMoves.clear();
 
         for (int[] move : movement) {
-            int x = startX - move[0];
-            int y = startY - move[1];
+            int x = getStartPoint().getX() - move[0];
+            int y = getStartPoint().getY() - move[1];
 
             if(isValidSquare(x, y) && (isSquareEmpty(x, y) || isSquareOccupied(x, y, whitePiece())) && isValidMoveWithCheck(x, y))
                 legalMoves.add(new int[] {x, y});
