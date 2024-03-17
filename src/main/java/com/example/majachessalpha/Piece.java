@@ -26,7 +26,7 @@ public abstract class Piece extends GridBase{
     static Point whiteKingPoint;
     static Point blackKingPoint;
 
-    List<int[]> legalMoves = new ArrayList<>();
+    List<Point> legalMoves = new ArrayList<>();
 
     static char[][] charBoard;
     static char[][] previousCharBoard = new char[BOARD_WIDTH][BOARD_LENGTH];
@@ -455,26 +455,26 @@ public abstract class Piece extends GridBase{
         }
     }
     public void printLegalMoves(){
-        for(int[] move : legalMoves){
-            System.out.println("x: " + move[0] + "; y: " + move[1]);
+        for(Point move : legalMoves){
+            System.out.println("x: " + move.getX() + "; y: " + move.getY());
         }
         System.out.println();
     }
-    public abstract List<int[]> generateLegalMoves();
-    public abstract List<int[]> generateLegalMovesWithCheck();
+    public abstract List<Point> generateLegalMoves();
+    public abstract List<Point> generateLegalMovesWithCheck();
 
     //CHECK AND MATE
     public boolean isCheck(char[][] board){
         if(Character.isUpperCase(board[startPoint.getX()][startPoint.getY()])){
             for(Piece p : playerBlackPieces){
-                for(int[] move : p.generateLegalMoves())
-                    if(move[0] == whiteKingPoint.getX() && move[1] == whiteKingPoint.getY()) return true;
+                for(Point move : p.generateLegalMoves())
+                    if(move.getX() == whiteKingPoint.getX() && move.getY() == whiteKingPoint.getY()) return true;
 
             }}
         else{
             for(Piece p : playerWhitePieces){
-                for(int[] move : p.generateLegalMoves())
-                    if(move[0] == blackKingPoint.getX() && move[1] == blackKingPoint.getY()) return true;
+                for(Point move : p.generateLegalMoves())
+                    if(move.getX() == blackKingPoint.getX() && move.getY() == blackKingPoint.getY()) return true;
 
             }
         }

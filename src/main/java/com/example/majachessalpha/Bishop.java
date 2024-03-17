@@ -36,7 +36,7 @@ public class Bishop extends Piece{
     }
 
     @Override
-    public List<int[]> generateLegalMoves() {
+    public List<Point> generateLegalMoves() {
         legalMoves.clear();
         int[][] directions = {
                 {-1, -1}, {-1, 1}, {1, -1}, {1, 1}  // Diagonals
@@ -51,9 +51,9 @@ public class Bishop extends Piece{
             while (isValidSquare(x, y)) {
 
                 if (isSquareEmpty(x, y)) {
-                    legalMoves.add(new int[]{x, y});
+                    legalMoves.add(new Point(x, y));
                 } else if (isSquareOccupied(x, y, whitePiece())) {
-                    legalMoves.add(new int[]{x, y});  // Can capture opponent's piece.
+                    legalMoves.add(new Point(x, y));  // Can capture opponent's piece.
                     break;  // No need to check further in this direction.
                 } else {
                     break;  // Friendly piece blocking the way.
@@ -67,7 +67,7 @@ public class Bishop extends Piece{
         return legalMoves;
     }
     @Override
-    public List<int[]> generateLegalMovesWithCheck() {
+    public List<Point> generateLegalMovesWithCheck() {
         legalMoves.clear();
         int[][] directions = {
                 {-1, -1}, {-1, 1}, {1, -1}, {1, 1}  // Diagonals
@@ -81,9 +81,9 @@ public class Bishop extends Piece{
 
             while (isValidSquare(x, y)) {
                 if (isSquareEmpty(x, y) && isValidMoveWithCheck(x, y)) {
-                    legalMoves.add(new int[]{x, y});
+                    legalMoves.add(new Point(x, y));
                 } else if (isSquareOccupied(x, y, whitePiece()) && isValidMoveWithCheck(x, y)) {
-                    legalMoves.add(new int[]{x, y});  // Can capture opponent's piece.
+                    legalMoves.add(new Point(x, y));  // Can capture opponent's piece.
                     break;  // No need to check further in this direction.
                 }else if(isSquareEmpty(x, y) && !isValidMoveWithCheck()){} //if square is empty, but there is check - keep going
                 else {

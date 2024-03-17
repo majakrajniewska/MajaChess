@@ -51,7 +51,7 @@ public class Knight extends Piece {
         }
         return false;
     }
-    public List<int[]> generateLegalMoves() {
+    public List<Point> generateLegalMoves() {
         legalMoves.clear();
 
         for (int[] move : movement) {
@@ -59,12 +59,12 @@ public class Knight extends Piece {
             int y = getStartPoint().getY() - move[1];
 
             if (isValidSquare(x, y) && (isSquareEmpty(x, y) || isSquareOccupied(x, y, whitePiece()))){
-                legalMoves.add(new int[]{x, y});
+                legalMoves.add(new Point(x, y));
             }
         }
         return legalMoves;
     }
-    public List<int[]> generateLegalMovesWithCheck() {
+    public List<Point> generateLegalMovesWithCheck() {
         legalMoves.clear();
 
         for (int[] move : movement) {
@@ -72,7 +72,7 @@ public class Knight extends Piece {
             int y = getStartPoint().getY() - move[1];
 
             if(isValidSquare(x, y) && (isSquareEmpty(x, y) || isSquareOccupied(x, y, whitePiece())) && isValidMoveWithCheck(x, y))
-                legalMoves.add(new int[] {x, y});
+                legalMoves.add(new Point(x, y));
         }
         return legalMoves;
     }
