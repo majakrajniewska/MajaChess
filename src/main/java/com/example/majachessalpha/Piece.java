@@ -13,7 +13,7 @@ public abstract class Piece extends GridBase{
     private boolean color;
     private int value;
     private char pieceChar;
-    //PIECEHANDLER
+    //PIECE HANDLER
     double mouseAnchorX;
     double mouseAnchorY;
     //coordinates from which piece starts its move
