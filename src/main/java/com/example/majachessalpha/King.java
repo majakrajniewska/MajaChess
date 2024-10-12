@@ -78,8 +78,10 @@ public class King extends Piece{
             int x = getStartPoint().getX() - move[0];
             int y = getStartPoint().getY() - move[1];
 
-            if (isValidSquare(x, y) && isValidMoveWithCheck(x, y) && (isSquareEmpty(x, y) || isSquareOccupied(x, y, whitePiece()))){
-                legalMoves.add(new Point(x, y));
+            Point tempPoint = new Point(x, y);
+
+            if (isValidSquare(tempPoint) && isValidMoveWithCheck(tempPoint) && (isSquareEmpty(tempPoint) || isSquareOccupied(tempPoint, whitePiece()))){
+                legalMoves.add(tempPoint);
             }
         }
         if(isValidCastle(getStartPoint().getX()-2))

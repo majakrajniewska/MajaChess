@@ -33,7 +33,7 @@ public abstract class Piece extends GridBase{
     private static List<Piece> playerWhitePieces;
     private static List<Piece> playerBlackPieces;
     //we need to have 50 last moves to check if it's a tie and if un passant is legal
-    private static Vector<Move> historyOfMoves = new Vector<>(); //doesn't work yet
+    private static Vector<Move> historyOfMoves = new Vector<>();
 
     public Piece(AnchorPane pane){
         super(pane);
@@ -118,6 +118,9 @@ public abstract class Piece extends GridBase{
                 if(canCastle()){
                     Move move = new Move(getCurrentPiece(getPieceChar()), startPoint, newPoint);
                     historyOfMoves.add(move);
+                    //Console visualisation
+                    printBoard(charBoard);
+                    printHistoryOfMoves();
                     setImageSquare(pieceImageView, newPoint);
                     castle();
                     if(isMate()) mate();
@@ -126,7 +129,9 @@ public abstract class Piece extends GridBase{
                 else if(isValidMoveWithCheck()){
                     Move move = new Move(getCurrentPiece(getPieceChar()), startPoint, newPoint);
                     historyOfMoves.add(move);
+                    //Console visualisation
                     printBoard(charBoard);
+                    printHistoryOfMoves();
                     if(!stackRemovedPiece.isEmpty()){
                         getAnchorPane().getChildren().remove(stackRemovedPiece.pop().getPieceImage());
                     }
@@ -137,7 +142,7 @@ public abstract class Piece extends GridBase{
                     setImageSquare(pieceImageView, startPoint);
                 }
             }
-             else {
+            else {
                 setImageSquare(pieceImageView, startPoint);
             }
         });
@@ -258,12 +263,6 @@ public abstract class Piece extends GridBase{
 
     public char getPieceChar(){return pieceChar;};
     public boolean whitePiece(){return color;};
-    public int getValue() {
-        return value;
-    }
-    public void setColor(boolean color) {
-        this.color = color;
-    }
     public void setPieceChar(char pieceChar) {
         this.pieceChar = pieceChar;
     }
@@ -562,11 +561,6 @@ public abstract class Piece extends GridBase{
         }
     }
 
-    //UN PASSANT FUNCTIONALITY
-    public boolean canUnPassant(){
-        return false;
-    }
-
     //BOARD FUNCTIONALITY
     void copyCharBoard(char[][] boardFrom, char[][] boardTo){
         for(int i = 0; i<boardFrom.length; i++)
@@ -584,5 +578,10 @@ public abstract class Piece extends GridBase{
             historyOfMoves.remove(historyOfMoves.size()-1);
         }
         return lastMove;
+    }
+    public static void printHistoryOfMoves(){
+        for(Move move : historyOfMoves){
+            System.out.println(move.toString());
+        }
     }
 }

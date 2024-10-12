@@ -70,9 +70,11 @@ public class Knight extends Piece {
         for (int[] move : movement) {
             int x = getStartPoint().getX() - move[0];
             int y = getStartPoint().getY() - move[1];
+            Point tempPoint = new Point(x, y);
 
-            if(isValidSquare(x, y) && (isSquareEmpty(x, y) || isSquareOccupied(x, y, whitePiece())) && isValidMoveWithCheck(x, y))
-                legalMoves.add(new Point(x, y));
+            if(isValidSquare(tempPoint) && (isSquareEmpty(tempPoint) ||
+                    isSquareOccupied(tempPoint, whitePiece())) && isValidMoveWithCheck(tempPoint))
+                legalMoves.add(tempPoint);
         }
         return legalMoves;
     }
