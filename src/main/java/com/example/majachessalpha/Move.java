@@ -14,6 +14,15 @@ public class Move {
     public Piece getPiece() {
         return piece;
     }
+
+    public Point getStartPoint() {
+        return startPoint;
+    }
+
+    public Point getNewPoint() {
+        return newPoint;
+    }
+
     public String toString(){
         return "PIECE: " + piece.getPieceChar() + "; START: " + startPoint.toString() + "; END: " + newPoint.toString();
     }

@@ -60,6 +60,10 @@ public abstract class Piece extends GridBase{
         newPoint = new Point();
     }
 
+    public String toString(){
+        return "PIECE: char - " + this.getPieceChar() + "; start: " + this.getStartPoint().getX() + " " +
+                this.getStartPoint().getY() + "; end: " + this.getNewPoint().getX() + " " + this.getNewPoint().getY();
+    }
     public Point getStartPoint() {
         return startPoint;
     }
@@ -135,7 +139,6 @@ public abstract class Piece extends GridBase{
                     if(!stackRemovedPiece.isEmpty()){
                         getAnchorPane().getChildren().remove(stackRemovedPiece.pop().getPieceImage());
                     }
-                    startPoint.copyPoint(newPoint);
                     if(isMate()) mate();
                     nextPlayersTurn();
                 }else {

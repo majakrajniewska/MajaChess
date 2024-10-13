@@ -4,6 +4,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 
+import java.io.Console;
 import java.util.List;
 
 public class Pawn extends Piece {
@@ -47,30 +48,29 @@ public class Pawn extends Piece {
                 return true;
             }
 
-            //un passant
-            else if (canDoUnPassant() && getNewPoint().getY() == 2 && (getNewPoint().getX() == getStartPoint().getX()-1 || getNewPoint().getX() == getStartPoint().getX()+1)){
+            //Capturing
+            else if (((getNewPoint().getX() == getStartPoint().getX() - 1 && getNewPoint().getY() == getStartPoint().getY() - 1) ||
+                    (getNewPoint().getX() == getStartPoint().getX() + 1 && getNewPoint().getY() == getStartPoint().getY() - 1)) &&
+                    (canCapture())){
                 return true;
             }
+            //en passant
+            else return(canDoUnPassant() && getNewPoint().getY() == 2 && (getNewPoint().getX() == getStartPoint().getX()-1 || getNewPoint().getX() == getStartPoint().getX()+1));
 
-            //Capturing
-            else return ((getNewPoint().getX() == getStartPoint().getX() - 1 && getNewPoint().getY() == getStartPoint().getY() - 1) ||
-                    (getNewPoint().getX() == getStartPoint().getX() + 1 && getNewPoint().getY() == getStartPoint().getY() - 1)) &&
-                    (canCapture());
         } else {
             //Normal move
             if(getNewPoint().getY() == getStartPoint().getY() + 1 && isHorizontal() && isSquareEmpty(getNewPoint())){
                 return true;
             }
 
-            //un passant
-            else if (canDoUnPassant() && getNewPoint().getY() == 5 && (getNewPoint().getX() == getStartPoint().getX()-1 || getNewPoint().getX() == getStartPoint().getX()+1)){
+            //Capturing
+            else if ((getNewPoint().getX() == getStartPoint().getX() - 1 && getNewPoint().getY() == getStartPoint().getY() + 1) ||
+                    (getNewPoint().getX() == getStartPoint().getX() + 1 && getNewPoint().getY() == getStartPoint().getY() + 1) &&
+                    (canCapture())){
                 return true;
             }
-
-            //Capturing
-            else return ((getNewPoint().getX() == getStartPoint().getX() - 1 && getNewPoint().getY() == getStartPoint().getY() + 1) ||
-                    (getNewPoint().getX() == getStartPoint().getX() + 1 && getNewPoint().getY() == getStartPoint().getY() + 1)) &&
-                            (canCapture());
+            //en passant
+            else return (canDoUnPassant() && getNewPoint().getY() == 5 && (getNewPoint().getX() == getStartPoint().getX()-1 || getNewPoint().getX() == getStartPoint().getX()+1));
         }
     }
     public List<Point> generateLegalMoves() {
@@ -142,19 +142,17 @@ public class Pawn extends Piece {
     public boolean canDoUnPassant(){
         if(whitePiece() && getStartPoint().getY()==3){
             Move lastMove = getLastMove();
-            Piece lastMovedPiece = lastMove.getPiece();
-            System.out.print("LAST MOVE: " + lastMove);
-            return (lastMovedPiece.getPieceChar() == 'p') &&
-                    (lastMovedPiece.getNewPoint().getY() == 3) &&
-                    (lastMovedPiece.getNewPoint().getX() == this.getStartPoint().getX() - 1 || lastMovedPiece.getNewPoint().getX() == this.getStartPoint().getX() + 1) &&
-                    (lastMovedPiece.getStartPoint().getY() == 1);
+            return ((lastMove.getPiece().getPieceChar() == 'p') &&
+                (lastMove.getNewPoint().getY() == 3) &&
+                (lastMove.getNewPoint().getX() == this.getStartPoint().getX() - 1 || lastMove.getNewPoint().getX() == this.getStartPoint().getX() + 1) &&
+                (lastMove.getStartPoint().getY() == 1));
         } else if(!whitePiece() && getStartPoint().getY()==4){
             Move lastMove = getLastMove();
-            Piece lastMovedPiece = lastMove.getPiece();
-            return (lastMovedPiece.getPieceChar() == 'P') &&
-                    (lastMovedPiece.getNewPoint().getY() == 4) &&
-                    (lastMovedPiece.getNewPoint().getX() == this.getStartPoint().getX() - 1 || lastMovedPiece.getNewPoint().getX() == this.getStartPoint().getX() + 1) &&
-                    (lastMovedPiece.getStartPoint().getY() == 6);
+
+            return (lastMove.getPiece().getPieceChar() == 'P') &&
+                    (lastMove.getNewPoint().getY() == 4) &&
+                    (lastMove.getNewPoint().getX() == this.getStartPoint().getX() - 1 || lastMove.getNewPoint().getX() == this.getStartPoint().getX() + 1) &&
+                    (lastMove.getStartPoint().getY() == 6);
         }
         return false;
     }
