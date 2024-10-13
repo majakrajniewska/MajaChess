@@ -47,10 +47,10 @@ public class Pawn extends Piece {
                 return true;
             }
 
-            //en passant
-            //else if (canDoUnPassant() && currentY == 2 && (getNewPoint().getX() == getStartPoint().getX()-1 || getNewPoint().getX() == getStartPoint().getX()+1)){
-            //    return true;
-            //}
+            //un passant
+            else if (canDoUnPassant() && getNewPoint().getY() == 2 && (getNewPoint().getX() == getStartPoint().getX()-1 || getNewPoint().getX() == getStartPoint().getX()+1)){
+                return true;
+            }
 
             //Capturing
             else return ((getNewPoint().getX() == getStartPoint().getX() - 1 && getNewPoint().getY() == getStartPoint().getY() - 1) ||
@@ -62,10 +62,10 @@ public class Pawn extends Piece {
                 return true;
             }
 
-            //en passant
-            //else if (canDoUnPassant() && currentY == 5 && (getNewPoint().getX() == getStartPoint().getX()-1 || getNewPoint().getX() == getStartPoint().getX()+1)){
-            //    return true;
-            //}
+            //un passant
+            else if (canDoUnPassant() && getNewPoint().getY() == 5 && (getNewPoint().getX() == getStartPoint().getX()-1 || getNewPoint().getX() == getStartPoint().getX()+1)){
+                return true;
+            }
 
             //Capturing
             else return ((getNewPoint().getX() == getStartPoint().getX() - 1 && getNewPoint().getY() == getStartPoint().getY() + 1) ||
@@ -84,8 +84,9 @@ public class Pawn extends Piece {
                 legalMoves.add(new Point(getStartPoint().getX()-1, getStartPoint().getY()-1));
             if(isValidSquare(getStartPoint().getX()+1, getStartPoint().getY()-1) && isSquareOccupied(getStartPoint().getX()+1, getStartPoint().getY()-1, true))
                 legalMoves.add(new Point(getStartPoint().getX()+1, getStartPoint().getY()-1));
-            //if(canDoUnPassantLeft()) legalMoves.add(new Point(getStartPoint().getX()-1, getStartPoint().getY()-1});
-            //if(canDoUnPassantRight()) legalMoves.add(new Point(getStartPoint().getX()+1, getStartPoint().getY()-1});
+            //Un passant
+            if(canDoUnPassantLeft()) legalMoves.add(new Point(getStartPoint().getX()-1, getStartPoint().getY()-1));
+            if(canDoUnPassantRight()) legalMoves.add(new Point(getStartPoint().getX()+1, getStartPoint().getY()-1));
         } else{
             if(isFirstMove() && isSquareEmpty(getStartPoint().getX(), getStartPoint().getY()+1) && isSquareEmpty(getStartPoint().getX(), getStartPoint().getY()+2))
                 legalMoves.add(new Point(getStartPoint().getX(), getStartPoint().getY()+2));
@@ -95,8 +96,9 @@ public class Pawn extends Piece {
                 legalMoves.add(new Point(getStartPoint().getX()-1, getStartPoint().getY()+1));
             if(isValidSquare(getStartPoint().getX()+1, getStartPoint().getY()+1) && isSquareOccupied(getStartPoint().getX()+1, getStartPoint().getY()+1, false))
                 legalMoves.add(new Point(getStartPoint().getX()+1, getStartPoint().getY()+1));
-            //if(canDoUnPassantLeft()) legalMoves.add(new Point(getStartPoint().getX()-1, getStartPoint().getY()+1});
-            //if(canDoUnPassantRight()) legalMoves.add(new Point(getStartPoint().getX()+1, getStartPoint().getY()+1});
+            //Un passant
+            if(canDoUnPassantLeft()) legalMoves.add(new Point(getStartPoint().getX()-1, getStartPoint().getY()+1));
+            if(canDoUnPassantRight()) legalMoves.add(new Point(getStartPoint().getX()+1, getStartPoint().getY()+1));
         }
 
         return legalMoves;
@@ -141,16 +143,17 @@ public class Pawn extends Piece {
         if(whitePiece() && getStartPoint().getY()==3){
             Move lastMove = getLastMove();
             Piece lastMovedPiece = lastMove.getPiece();
+            System.out.print("LAST MOVE: " + lastMove);
             return (lastMovedPiece.getPieceChar() == 'p') &&
                     (lastMovedPiece.getNewPoint().getY() == 3) &&
-                    (lastMovedPiece.getNewPoint().getX() == this.getNewPoint().getX() - 1 || lastMovedPiece.getNewPoint().getX() == this.getNewPoint().getX() + 1) &&
+                    (lastMovedPiece.getNewPoint().getX() == this.getStartPoint().getX() - 1 || lastMovedPiece.getNewPoint().getX() == this.getStartPoint().getX() + 1) &&
                     (lastMovedPiece.getStartPoint().getY() == 1);
         } else if(!whitePiece() && getStartPoint().getY()==4){
             Move lastMove = getLastMove();
             Piece lastMovedPiece = lastMove.getPiece();
             return (lastMovedPiece.getPieceChar() == 'P') &&
                     (lastMovedPiece.getNewPoint().getY() == 4) &&
-                    (lastMovedPiece.getNewPoint().getX() == this.getNewPoint().getX() - 1 || lastMovedPiece.getNewPoint().getX() == this.getNewPoint().getX() + 1) &&
+                    (lastMovedPiece.getNewPoint().getX() == this.getStartPoint().getX() - 1 || lastMovedPiece.getNewPoint().getX() == this.getStartPoint().getX() + 1) &&
                     (lastMovedPiece.getStartPoint().getY() == 6);
         }
         return false;

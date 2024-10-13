@@ -572,12 +572,10 @@ public abstract class Piece extends GridBase{
         return historyOfMoves;
     }
     public static Move getLastMove(){
-        Move lastMove = null;
         if(!historyOfMoves.isEmpty()){
-            lastMove = historyOfMoves.lastElement();
-            historyOfMoves.remove(historyOfMoves.size()-1);
+            return historyOfMoves.lastElement();
         }
-        return lastMove;
+        return null;
     }
     public static void printHistoryOfMoves(){
         for(Move move : historyOfMoves){
