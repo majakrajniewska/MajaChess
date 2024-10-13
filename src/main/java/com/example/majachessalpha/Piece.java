@@ -300,6 +300,7 @@ public abstract class Piece extends GridBase{
             for(Piece piece : playerBlackPieces){
                 if(piece.startPoint.getX() == newPoint.getX() && piece.startPoint.getY() == newPoint.getY()){
                     playerBlackPieces.remove(piece);
+                    System.out.print("CAPTURED PIECE: " + piece);
                     return piece;
                 }
             }
@@ -309,6 +310,7 @@ public abstract class Piece extends GridBase{
             for(Piece piece : playerWhitePieces){
                 if(piece.startPoint.getX() == newPoint.getX() && piece.startPoint.getY() == newPoint.getY()){
                     playerWhitePieces.remove(piece);
+                    System.out.print("CAPTURED PIECE: " + piece);
                     return piece;
                 }
             }
