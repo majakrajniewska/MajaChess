@@ -33,4 +33,7 @@ public class Point {
         this.x = point.getX();
         this.y = point.getY();
     }
+    public String toString(){
+        return getX() + " " + getY();
+    }
 }

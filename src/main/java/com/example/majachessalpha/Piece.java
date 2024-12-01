@@ -13,7 +13,7 @@ public abstract class Piece extends GridBase{
     private boolean color;
     private int value;
     private char pieceChar;
-    //PIECEHANDLER
+    //PIECE HANDLER
     double mouseAnchorX;
     double mouseAnchorY;
     //coordinates from which piece starts its move
@@ -26,14 +26,14 @@ public abstract class Piece extends GridBase{
     static Point whiteKingPoint;
     static Point blackKingPoint;
 
-    List<int[]> legalMoves = new ArrayList<>();
+    List<Point> legalMoves = new ArrayList<>();
 
     static char[][] charBoard;
     static char[][] previousCharBoard = new char[BOARD_WIDTH][BOARD_LENGTH];
     private static List<Piece> playerWhitePieces;
     private static List<Piece> playerBlackPieces;
     //we need to have 50 last moves to check if it's a tie and if un passant is legal
-    private static Vector<Move> historyOfMoves = new Vector<>(); //doesn't work yet
+    private static Vector<Move> historyOfMoves = new Vector<>();
 
     public Piece(AnchorPane pane){
         super(pane);
@@ -60,6 +60,10 @@ public abstract class Piece extends GridBase{
         newPoint = new Point();
     }
 
+    public String toString(){
+        return "PIECE: char - " + this.getPieceChar() + "; start: " + this.getStartPoint().getX() + " " +
+                this.getStartPoint().getY() + "; end: " + this.getNewPoint().getX() + " " + this.getNewPoint().getY();
+    }
     public Point getStartPoint() {
         return startPoint;
     }
@@ -118,6 +122,9 @@ public abstract class Piece extends GridBase{
                 if(canCastle()){
                     Move move = new Move(getCurrentPiece(getPieceChar()), startPoint, newPoint);
                     historyOfMoves.add(move);
+                    //Console visualisation
+                    printBoard(charBoard);
+                    printHistoryOfMoves();
                     setImageSquare(pieceImageView, newPoint);
                     castle();
                     if(isMate()) mate();
@@ -126,18 +133,19 @@ public abstract class Piece extends GridBase{
                 else if(isValidMoveWithCheck()){
                     Move move = new Move(getCurrentPiece(getPieceChar()), startPoint, newPoint);
                     historyOfMoves.add(move);
+                    //Console visualisation
                     printBoard(charBoard);
+                    printHistoryOfMoves();
                     if(!stackRemovedPiece.isEmpty()){
                         getAnchorPane().getChildren().remove(stackRemovedPiece.pop().getPieceImage());
                     }
-                    startPoint.copyPoint(newPoint);
                     if(isMate()) mate();
                     nextPlayersTurn();
                 }else {
                     setImageSquare(pieceImageView, startPoint);
                 }
             }
-             else {
+            else {
                 setImageSquare(pieceImageView, startPoint);
             }
         });
@@ -258,12 +266,6 @@ public abstract class Piece extends GridBase{
 
     public char getPieceChar(){return pieceChar;};
     public boolean whitePiece(){return color;};
-    public int getValue() {
-        return value;
-    }
-    public void setColor(boolean color) {
-        this.color = color;
-    }
     public void setPieceChar(char pieceChar) {
         this.pieceChar = pieceChar;
     }
@@ -296,7 +298,7 @@ public abstract class Piece extends GridBase{
         if(Character.isUpperCase(previousCharBoard[startPoint.getX()][startPoint.getY()]) &&
             Character.isLowerCase(previousCharBoard[newPoint.getX()][newPoint.getY()])){
             for(Piece piece : playerBlackPieces){
-                if(piece.startPoint.getX() == newPoint.getX() && piece.startPoint.getY() == newPoint.getY()){
+                if(piece.newPoint.getX() == newPoint.getX() && piece.newPoint.getY() == newPoint.getY()){
                     playerBlackPieces.remove(piece);
                     return piece;
                 }
@@ -305,7 +307,7 @@ public abstract class Piece extends GridBase{
         else if(Character.isLowerCase(previousCharBoard[startPoint.getX()][startPoint.getY()]) &&
             Character.isUpperCase(previousCharBoard[newPoint.getX()][newPoint.getY()])){
             for(Piece piece : playerWhitePieces){
-                if(piece.startPoint.getX() == newPoint.getX() && piece.startPoint.getY() == newPoint.getY()){
+                if(piece.newPoint.getX() == newPoint.getX() && piece.newPoint.getY() == newPoint.getY()){
                     playerWhitePieces.remove(piece);
                     return piece;
                 }
@@ -455,26 +457,26 @@ public abstract class Piece extends GridBase{
         }
     }
     public void printLegalMoves(){
-        for(int[] move : legalMoves){
-            System.out.println("x: " + move[0] + "; y: " + move[1]);
+        for(Point move : legalMoves){
+            System.out.println("x: " + move.getX() + "; y: " + move.getY());
         }
         System.out.println();
     }
-    public abstract List<int[]> generateLegalMoves();
-    public abstract List<int[]> generateLegalMovesWithCheck();
+    public abstract List<Point> generateLegalMoves();
+    public abstract List<Point> generateLegalMovesWithCheck();
 
     //CHECK AND MATE
     public boolean isCheck(char[][] board){
         if(Character.isUpperCase(board[startPoint.getX()][startPoint.getY()])){
             for(Piece p : playerBlackPieces){
-                for(int[] move : p.generateLegalMoves())
-                    if(move[0] == whiteKingPoint.getX() && move[1] == whiteKingPoint.getY()) return true;
+                for(Point move : p.generateLegalMoves())
+                    if(move.getX() == whiteKingPoint.getX() && move.getY() == whiteKingPoint.getY()) return true;
 
             }}
         else{
             for(Piece p : playerWhitePieces){
-                for(int[] move : p.generateLegalMoves())
-                    if(move[0] == blackKingPoint.getX() && move[1] == blackKingPoint.getY()) return true;
+                for(Point move : p.generateLegalMoves())
+                    if(move.getX() == blackKingPoint.getX() && move.getY() == blackKingPoint.getY()) return true;
 
             }
         }
@@ -562,11 +564,6 @@ public abstract class Piece extends GridBase{
         }
     }
 
-    //UN PASSANT FUNCTIONALITY
-    public boolean canUnPassant(){
-        return false;
-    }
-
     //BOARD FUNCTIONALITY
     void copyCharBoard(char[][] boardFrom, char[][] boardTo){
         for(int i = 0; i<boardFrom.length; i++)
@@ -578,11 +575,14 @@ public abstract class Piece extends GridBase{
         return historyOfMoves;
     }
     public static Move getLastMove(){
-        Move lastMove = null;
         if(!historyOfMoves.isEmpty()){
-            lastMove = historyOfMoves.lastElement();
-            historyOfMoves.remove(historyOfMoves.size()-1);
+            return historyOfMoves.lastElement();
         }
-        return lastMove;
+        return null;
+    }
+    public static void printHistoryOfMoves(){
+        for(Move move : historyOfMoves){
+            System.out.println(move.toString());
+        }
     }
 }

@@ -1,7 +1,5 @@
 package com.example.majachessalpha;
 
-import java.util.Vector;
-
 public class Move {
     private Piece piece;
     private Point startPoint;
@@ -13,10 +11,19 @@ public class Move {
         this.newPoint = newPoint;
     }
 
-//    public void printMove(){
-//        System.out.println(piece.getPieceChar() + " move from X: " + getStartPoint().getX() + ", Y: " + getStartPoint().getY() + ", to X: " + getNewPoint().getX() + ", Y: " + currentY);
-//    }
     public Piece getPiece() {
         return piece;
+    }
+
+    public Point getStartPoint() {
+        return startPoint;
+    }
+
+    public Point getNewPoint() {
+        return newPoint;
+    }
+
+    public String toString(){
+        return "PIECE: " + piece.getPieceChar() + "; START: " + startPoint.toString() + "; END: " + newPoint.toString();
     }
 }

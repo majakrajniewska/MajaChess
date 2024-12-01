@@ -56,7 +56,7 @@ public class King extends Piece{
         return false;
     }
     @Override
-    public List<int[]> generateLegalMoves() {
+    public List<Point> generateLegalMoves() {
         legalMoves.clear();
 
         for (int[] move : movement) {
@@ -64,28 +64,30 @@ public class King extends Piece{
             int y = getStartPoint().getY() - move[1];
 
             if (isValidSquare(x, y) && (isSquareEmpty(x, y) || isSquareOccupied(x, y, whitePiece()))){
-                legalMoves.add(new int[]{x, y});
+                legalMoves.add(new Point(x, y));
             }
 
         }
         return legalMoves;
     }
     @Override
-    public List<int[]> generateLegalMovesWithCheck() {
+    public List<Point> generateLegalMovesWithCheck() {
         legalMoves.clear();
 
         for (int[] move : movement) {
             int x = getStartPoint().getX() - move[0];
             int y = getStartPoint().getY() - move[1];
 
-            if (isValidSquare(x, y) && isValidMoveWithCheck(x, y) && (isSquareEmpty(x, y) || isSquareOccupied(x, y, whitePiece()))){
-                legalMoves.add(new int[]{x, y});
+            Point tempPoint = new Point(x, y);
+
+            if (isValidSquare(tempPoint) && isValidMoveWithCheck(tempPoint) && (isSquareEmpty(tempPoint) || isSquareOccupied(tempPoint, whitePiece()))){
+                legalMoves.add(tempPoint);
             }
         }
         if(isValidCastle(getStartPoint().getX()-2))
-            legalMoves.add(new int[]{getStartPoint().getX()-2, getStartPoint().getY()});
+            legalMoves.add(new Point(getStartPoint().getX()-2, getStartPoint().getY()));
         if(isValidCastle(getStartPoint().getX()+2))
-            legalMoves.add(new int[]{getStartPoint().getX()+2, getStartPoint().getY()});
+            legalMoves.add(new Point(getStartPoint().getX()+2, getStartPoint().getY()));
         return legalMoves;
     }
 
@@ -166,8 +168,8 @@ public class King extends Piece{
     public boolean loopPiecesWhite(int start, int end){
         for(int x = start; x <= end; x++){
             for(Piece p : getPlayerWhitePieces()) {
-                for (int[] move : p.generateLegalMoves()) {
-                    if (move[0] == x && move[1] == blackKingPoint.getY()) return true;
+                for (Point move : p.generateLegalMoves()) {
+                    if (move.getX() == x && move.getY() == blackKingPoint.getY()) return true;
                 }
             }
         }
@@ -176,8 +178,8 @@ public class King extends Piece{
     public boolean loopPiecesBlack(int start, int end){
         for(int x = start; x <= end; x++){
             for(Piece p : getPlayerBlackPieces()) {
-                for (int[] move : p.generateLegalMoves()) {
-                    if (move[0] == x && move[1] == whiteKingPoint.getY()) return true;
+                for (Point move : p.generateLegalMoves()) {
+                    if (move.getX() == x && move.getY() == whiteKingPoint.getY()) return true;
                 }
             }
         }

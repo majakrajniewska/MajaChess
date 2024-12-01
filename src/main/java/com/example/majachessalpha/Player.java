@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Player {
-    private boolean color; //ZMIEŃ NA BOOLEAN
+    private boolean color;
     //true - white; false - black
     private boolean turn;
     private List<Piece> playerPieces;

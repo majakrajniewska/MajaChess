@@ -4,6 +4,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 
+import java.io.Console;
 import java.util.List;
 
 public class Pawn extends Piece {
@@ -47,85 +48,86 @@ public class Pawn extends Piece {
                 return true;
             }
 
-            //en passant
-            //else if (canDoUnPassant() && currentY == 2 && (getNewPoint().getX() == getStartPoint().getX()-1 || getNewPoint().getX() == getStartPoint().getX()+1)){
-            //    return true;
-            //}
-
             //Capturing
-            else return ((getNewPoint().getX() == getStartPoint().getX() - 1 && getNewPoint().getY() == getStartPoint().getY() - 1) ||
+            else if (((getNewPoint().getX() == getStartPoint().getX() - 1 && getNewPoint().getY() == getStartPoint().getY() - 1) ||
                     (getNewPoint().getX() == getStartPoint().getX() + 1 && getNewPoint().getY() == getStartPoint().getY() - 1)) &&
-                    (canCapture());
+                    (canCapture())){
+                return true;
+            }
+            //en passant
+            else return(canDoUnPassant() && getNewPoint().getY() == 2 && (getNewPoint().getX() == getStartPoint().getX()-1 || getNewPoint().getX() == getStartPoint().getX()+1));
+
         } else {
             //Normal move
             if(getNewPoint().getY() == getStartPoint().getY() + 1 && isHorizontal() && isSquareEmpty(getNewPoint())){
                 return true;
             }
 
-            //en passant
-            //else if (canDoUnPassant() && currentY == 5 && (getNewPoint().getX() == getStartPoint().getX()-1 || getNewPoint().getX() == getStartPoint().getX()+1)){
-            //    return true;
-            //}
-
             //Capturing
-            else return ((getNewPoint().getX() == getStartPoint().getX() - 1 && getNewPoint().getY() == getStartPoint().getY() + 1) ||
-                    (getNewPoint().getX() == getStartPoint().getX() + 1 && getNewPoint().getY() == getStartPoint().getY() + 1)) &&
-                            (canCapture());
+            else if ((getNewPoint().getX() == getStartPoint().getX() - 1 && getNewPoint().getY() == getStartPoint().getY() + 1) ||
+                    (getNewPoint().getX() == getStartPoint().getX() + 1 && getNewPoint().getY() == getStartPoint().getY() + 1) &&
+                    (canCapture())){
+                return true;
+            }
+            //en passant
+            else return (canDoUnPassant() && getNewPoint().getY() == 5 && (getNewPoint().getX() == getStartPoint().getX()-1 || getNewPoint().getX() == getStartPoint().getX()+1));
         }
     }
-    public List<int[]> generateLegalMoves() {
+    public List<Point> generateLegalMoves() {
         legalMoves.clear();
         if(whitePiece()){
             if(isFirstMove() && isSquareEmpty(getStartPoint().getX(), getStartPoint().getY()-1) && isSquareEmpty(getStartPoint().getX(), getStartPoint().getY()-2))
-                legalMoves.add(new int[]{getStartPoint().getX(), getStartPoint().getY()-2});
+                legalMoves.add(new Point(getStartPoint().getX(), getStartPoint().getY()-2));
             if(isValidSquare(getStartPoint().getX(), getStartPoint().getY()-1) && isSquareEmpty(getStartPoint().getX(), getStartPoint().getY()-1))
-                legalMoves.add(new int[]{getStartPoint().getX(), getStartPoint().getY()-1});
+                legalMoves.add(new Point(getStartPoint().getX(), getStartPoint().getY()-1));
             if(isValidSquare(getStartPoint().getX()-1, getStartPoint().getY()-1) && isSquareOccupied(getStartPoint().getX()-1, getStartPoint().getY()-1, true))
-                legalMoves.add(new int[]{getStartPoint().getX()-1, getStartPoint().getY()-1});
+                legalMoves.add(new Point(getStartPoint().getX()-1, getStartPoint().getY()-1));
             if(isValidSquare(getStartPoint().getX()+1, getStartPoint().getY()-1) && isSquareOccupied(getStartPoint().getX()+1, getStartPoint().getY()-1, true))
-                legalMoves.add(new int[]{getStartPoint().getX()+1, getStartPoint().getY()-1});
-            //if(canDoUnPassantLeft()) legalMoves.add(new int[]{getStartPoint().getX()-1, getStartPoint().getY()-1});
-            //if(canDoUnPassantRight()) legalMoves.add(new int[]{getStartPoint().getX()+1, getStartPoint().getY()-1});
+                legalMoves.add(new Point(getStartPoint().getX()+1, getStartPoint().getY()-1));
+            //Un passant
+            if(canDoUnPassantLeft()) legalMoves.add(new Point(getStartPoint().getX()-1, getStartPoint().getY()-1));
+            if(canDoUnPassantRight()) legalMoves.add(new Point(getStartPoint().getX()+1, getStartPoint().getY()-1));
         } else{
             if(isFirstMove() && isSquareEmpty(getStartPoint().getX(), getStartPoint().getY()+1) && isSquareEmpty(getStartPoint().getX(), getStartPoint().getY()+2))
-                legalMoves.add(new int[]{getStartPoint().getX(), getStartPoint().getY()+2});
+                legalMoves.add(new Point(getStartPoint().getX(), getStartPoint().getY()+2));
             if(isValidSquare(getStartPoint().getX(), getStartPoint().getY()+1) && isSquareEmpty(getStartPoint().getX(), getStartPoint().getY()+1))
-                legalMoves.add(new int[]{getStartPoint().getX(), getStartPoint().getY()+1});
+                legalMoves.add(new Point(getStartPoint().getX(), getStartPoint().getY()+1));
             if(isValidSquare(getStartPoint().getX()-1, getStartPoint().getY()+1) && isSquareOccupied(getStartPoint().getX()-1, getStartPoint().getY()+1, false))
-                legalMoves.add(new int[]{getStartPoint().getX()-1, getStartPoint().getY()+1});
+                legalMoves.add(new Point(getStartPoint().getX()-1, getStartPoint().getY()+1));
             if(isValidSquare(getStartPoint().getX()+1, getStartPoint().getY()+1) && isSquareOccupied(getStartPoint().getX()+1, getStartPoint().getY()+1, false))
-                legalMoves.add(new int[]{getStartPoint().getX()+1, getStartPoint().getY()+1});
-            //if(canDoUnPassantLeft()) legalMoves.add(new int[]{getStartPoint().getX()-1, getStartPoint().getY()+1});
-            //if(canDoUnPassantRight()) legalMoves.add(new int[]{getStartPoint().getX()+1, getStartPoint().getY()+1});
+                legalMoves.add(new Point(getStartPoint().getX()+1, getStartPoint().getY()+1));
+            //Un passant
+            if(canDoUnPassantLeft()) legalMoves.add(new Point(getStartPoint().getX()-1, getStartPoint().getY()+1));
+            if(canDoUnPassantRight()) legalMoves.add(new Point(getStartPoint().getX()+1, getStartPoint().getY()+1));
         }
 
         return legalMoves;
     }
 
     //doesn't have un passant yet
-    public List<int[]> generateLegalMovesWithCheck() {
+    public List<Point> generateLegalMovesWithCheck() {
         legalMoves.clear();
         if(whitePiece()){
             if(isFirstMove() && isSquareEmpty(getStartPoint().getX(), getStartPoint().getY()-1) && isSquareEmpty(getStartPoint().getX(), getStartPoint().getY()-2) && isValidMoveWithCheck(getStartPoint().getX(), getStartPoint().getY()-2))
-                legalMoves.add(new int[]{getStartPoint().getX(), getStartPoint().getY() - 2});
+                legalMoves.add(new Point(getStartPoint().getX(), getStartPoint().getY() - 2));
             if(isValidSquare(getStartPoint().getX(), getStartPoint().getY()-1) && isSquareEmpty(getStartPoint().getX(), getStartPoint().getY()-1) && isValidMoveWithCheck(getStartPoint().getX(), getStartPoint().getY()-1))
-                legalMoves.add(new int[]{getStartPoint().getX(), getStartPoint().getY()-1});
+                legalMoves.add(new Point(getStartPoint().getX(), getStartPoint().getY()-1));
             if(isValidSquare(getStartPoint().getX()-1, getStartPoint().getY()-1) && isSquareOccupied(getStartPoint().getX()-1, getStartPoint().getY()-1, true) && isValidMoveWithCheck(getStartPoint().getX()-1, getStartPoint().getY()-1)) {
-                legalMoves.add(new int[]{getStartPoint().getX() - 1, getStartPoint().getY() - 1});
+                legalMoves.add(new Point(getStartPoint().getX() - 1, getStartPoint().getY() - 1));
             }
             if(isValidSquare(getStartPoint().getX()+1, getStartPoint().getY()-1) && isSquareOccupied(getStartPoint().getX()+1, getStartPoint().getY()-1, true) && isValidMoveWithCheck(getStartPoint().getX()+1, getStartPoint().getY()-1)) {
-                legalMoves.add(new int[]{getStartPoint().getX() + 1, getStartPoint().getY() - 1});
+                legalMoves.add(new Point(getStartPoint().getX() + 1, getStartPoint().getY() - 1));
             }
         } else{
             if(isFirstMove() && isSquareEmpty(getStartPoint().getX(), getStartPoint().getY()+1) && isSquareEmpty(getStartPoint().getX(), getStartPoint().getY()+2) && isValidMoveWithCheck(getStartPoint().getX(), getStartPoint().getY()+2))
-                legalMoves.add(new int[]{getStartPoint().getX(), getStartPoint().getY()+2});
+                legalMoves.add(new Point(getStartPoint().getX(), getStartPoint().getY()+2));
             if(isValidSquare(getStartPoint().getX(), getStartPoint().getY()+1) && isSquareEmpty(getStartPoint().getX(), getStartPoint().getY()+1) && isValidMoveWithCheck(getStartPoint().getX(), getStartPoint().getY()+1))
-                legalMoves.add(new int[]{getStartPoint().getX(), getStartPoint().getY()+1});
+                legalMoves.add(new Point(getStartPoint().getX(), getStartPoint().getY()+1));
             if(isValidSquare(getStartPoint().getX()-1, getStartPoint().getY()+1) && isSquareOccupied(getStartPoint().getX()-1, getStartPoint().getY()+1, false) && isValidMoveWithCheck(getStartPoint().getX()-1, getStartPoint().getY()+1)) {
-                legalMoves.add(new int[]{getStartPoint().getX() - 1, getStartPoint().getY() + 1});
+                legalMoves.add(new Point(getStartPoint().getX() - 1, getStartPoint().getY() + 1));
             }
             if(isValidSquare(getStartPoint().getX()+1, getStartPoint().getY()+1) && isSquareOccupied(getStartPoint().getX()+1, getStartPoint().getY()+1, false) && isValidMoveWithCheck(getStartPoint().getX()+1, getStartPoint().getY()+1)){
-                legalMoves.add(new int[]{getStartPoint().getX() + 1, getStartPoint().getY() + 1});
+                legalMoves.add(new Point(getStartPoint().getX() + 1, getStartPoint().getY() + 1));
             }
         }
         return legalMoves;
@@ -140,18 +142,17 @@ public class Pawn extends Piece {
     public boolean canDoUnPassant(){
         if(whitePiece() && getStartPoint().getY()==3){
             Move lastMove = getLastMove();
-            Piece lastMovedPiece = lastMove.getPiece();
-            return (lastMovedPiece.getPieceChar() == 'p') &&
-                    (lastMovedPiece.getNewPoint().getY() == 3) &&
-                    (lastMovedPiece.getNewPoint().getX() == this.getNewPoint().getX() - 1 || lastMovedPiece.getNewPoint().getX() == this.getNewPoint().getX() + 1) &&
-                    (lastMovedPiece.getStartPoint().getY() == 1);
+            return ((lastMove.getPiece().getPieceChar() == 'p') &&
+                (lastMove.getNewPoint().getY() == 3) &&
+                (lastMove.getNewPoint().getX() == this.getStartPoint().getX() - 1 || lastMove.getNewPoint().getX() == this.getStartPoint().getX() + 1) &&
+                (lastMove.getStartPoint().getY() == 1));
         } else if(!whitePiece() && getStartPoint().getY()==4){
             Move lastMove = getLastMove();
-            Piece lastMovedPiece = lastMove.getPiece();
-            return (lastMovedPiece.getPieceChar() == 'P') &&
-                    (lastMovedPiece.getNewPoint().getY() == 4) &&
-                    (lastMovedPiece.getNewPoint().getX() == this.getNewPoint().getX() - 1 || lastMovedPiece.getNewPoint().getX() == this.getNewPoint().getX() + 1) &&
-                    (lastMovedPiece.getStartPoint().getY() == 6);
+
+            return (lastMove.getPiece().getPieceChar() == 'P') &&
+                    (lastMove.getNewPoint().getY() == 4) &&
+                    (lastMove.getNewPoint().getX() == this.getStartPoint().getX() - 1 || lastMove.getNewPoint().getX() == this.getStartPoint().getX() + 1) &&
+                    (lastMove.getStartPoint().getY() == 6);
         }
         return false;
     }
