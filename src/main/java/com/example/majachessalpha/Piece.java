@@ -298,9 +298,8 @@ public abstract class Piece extends GridBase{
         if(Character.isUpperCase(previousCharBoard[startPoint.getX()][startPoint.getY()]) &&
             Character.isLowerCase(previousCharBoard[newPoint.getX()][newPoint.getY()])){
             for(Piece piece : playerBlackPieces){
-                if(piece.startPoint.getX() == newPoint.getX() && piece.startPoint.getY() == newPoint.getY()){
+                if(piece.newPoint.getX() == newPoint.getX() && piece.newPoint.getY() == newPoint.getY()){
                     playerBlackPieces.remove(piece);
-                    System.out.print("CAPTURED PIECE: " + piece);
                     return piece;
                 }
             }
@@ -308,9 +307,8 @@ public abstract class Piece extends GridBase{
         else if(Character.isLowerCase(previousCharBoard[startPoint.getX()][startPoint.getY()]) &&
             Character.isUpperCase(previousCharBoard[newPoint.getX()][newPoint.getY()])){
             for(Piece piece : playerWhitePieces){
-                if(piece.startPoint.getX() == newPoint.getX() && piece.startPoint.getY() == newPoint.getY()){
+                if(piece.newPoint.getX() == newPoint.getX() && piece.newPoint.getY() == newPoint.getY()){
                     playerWhitePieces.remove(piece);
-                    System.out.print("CAPTURED PIECE: " + piece);
                     return piece;
                 }
             }
