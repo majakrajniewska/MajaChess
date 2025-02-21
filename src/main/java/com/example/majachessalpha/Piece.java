@@ -137,6 +137,7 @@ public abstract class Piece extends GridBase{
                     printBoard(charBoard);
                     printHistoryOfMoves();
                     if(!stackRemovedPiece.isEmpty()){
+                        System.out.printf("APPARENTLY STACK REMOVED PIECE IS NOT EMPTY: " + stackRemovedPiece);
                         getAnchorPane().getChildren().remove(stackRemovedPiece.pop().getPieceImage());
                     }
                     if(isMate()) mate();
@@ -160,8 +161,10 @@ public abstract class Piece extends GridBase{
     public boolean isValidMoveWithCheck(){
         if(isValidMove()){
             copyCharBoard(charBoard, previousCharBoard);
-            if(canCapture())
+            if(canCapture()) {
+                System.out.println("ENTER CAPTURE...");
                 stackRemovedPiece.push(capture());
+            }
             makeMove();
 
             if(isCheck(previousCharBoard)) {
@@ -179,8 +182,10 @@ public abstract class Piece extends GridBase{
     //use only while generating moves, not when making them
     public boolean isValidMoveWithCheck(Point point){
         copyCharBoard(charBoard, previousCharBoard);
-        if(canCapture(point))
+        if(canCapture(point)) {
+            System.out.println("ENTER CAPTURE isValidMoveWithCheck(Point point)...");
             stackRemovedPiece.push(capture(point));
+        }
         makeMove(point);
 
         //save current king coordinate and change them if needed
@@ -200,8 +205,10 @@ public abstract class Piece extends GridBase{
     public boolean isValidMoveWithCheck(int x, int y){
         Point point = new Point(x, y);
         copyCharBoard(charBoard, previousCharBoard);
-        if(canCapture(point))
+        if(canCapture(point)) {
+            System.out.println("ENTER CAPTURE isValidMoveWithCheck(int x, int y)...");
             stackRemovedPiece.push(capture(point));
+        }
         makeMove(point);
 
         //save current king coordinate and change them if needed
@@ -313,6 +320,7 @@ public abstract class Piece extends GridBase{
                 }
             }
         }
+        System.out.println("NO SUCH PIECE IN PLAYERPIECES!!!!!");
         return null;
     }
     public Piece capture(Point point){
