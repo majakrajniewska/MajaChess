@@ -7,7 +7,6 @@ import javafx.scene.layout.AnchorPane;
 
 import java.net.URL;
 import java.util.*;
-//UNPASSANT DZIALA TYLKO CZARNY W LEWO I NIE USUWA BIALEGO PIONKA
 public abstract class Piece extends GridBase{
     //PIECE
     private boolean color;
@@ -17,12 +16,13 @@ public abstract class Piece extends GridBase{
     double mouseAnchorX;
     double mouseAnchorY;
     //coordinates from which piece starts its move
-    private Point startPoint;
+    private final Point startPoint;
     //coordinates where piece ends its move (if its possible)
-    private Point newPoint;
+    private final Point newPoint;
 
     //saving last removed piece
     Deque<Piece> stackRemovedPiece = new LinkedList<>();
+
     static Point whiteKingPoint;
     static Point blackKingPoint;
 
@@ -120,7 +120,7 @@ public abstract class Piece extends GridBase{
             //if move is valid - make move
             if(isPlayerTurn()){
                 if(canCastle()){
-                    Move move = new Move(getCurrentPiece(getPieceChar()), startPoint, newPoint);
+                    Move move = new Move(getCurrentPiece(getPieceChar()), new Point(startPoint), new Point(newPoint));
                     historyOfMoves.add(move);
                     //Console visualisation
                     printBoard(charBoard);
@@ -131,7 +131,7 @@ public abstract class Piece extends GridBase{
                     nextPlayersTurn();
                 }
                 else if(isValidMoveWithCheck()){
-                    Move move = new Move(getCurrentPiece(getPieceChar()), startPoint, newPoint);
+                    Move move = new Move(getCurrentPiece(getPieceChar()), new Point(startPoint), new Point(newPoint));
                     historyOfMoves.add(move);
                     //Console visualisation
                     printBoard(charBoard);
@@ -427,7 +427,6 @@ public abstract class Piece extends GridBase{
                 (Character.isLowerCase(charBoard[startPoint.getX()][startPoint.getY()]) &&
                 Character.isUpperCase(charBoard[point.getX()][point.getY()])));
     }
-
 
     //GENERATING LEGAL MOVES
     public boolean isValidSquare(Point point){

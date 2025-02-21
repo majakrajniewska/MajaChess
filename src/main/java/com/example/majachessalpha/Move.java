@@ -1,9 +1,9 @@
 package com.example.majachessalpha;
 
 public class Move {
-    private Piece piece;
-    private Point startPoint;
-    private Point newPoint;
+    private final Piece piece;
+    private final Point startPoint;
+    private final Point newPoint;
 
     public Move(Piece piece, Point startPoint, Point newPoint) {
         this.piece = piece;
