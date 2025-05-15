@@ -11,9 +11,9 @@ public abstract class GridBase extends GameHandler{
 
     AnchorPane pane;
     //char board
-    private static char[][] board = new char[BOARD_WIDTH][BOARD_LENGTH];
+    private static final char[][] board = new char[BOARD_WIDTH][BOARD_LENGTH];
     //board with images
-    private static ImageView[][] boardImageViews = new ImageView[BOARD_WIDTH][BOARD_LENGTH];
+    private static final ImageView[][] boardImageViews = new ImageView[BOARD_WIDTH][BOARD_LENGTH];
 
     public GridBase(){}
     public GridBase(AnchorPane pane){
