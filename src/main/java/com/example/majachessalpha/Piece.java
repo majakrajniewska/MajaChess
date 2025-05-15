@@ -138,7 +138,6 @@ public abstract class Piece extends GridBase{
                     printBoard(charBoard);
                     printHistoryOfMoves();
                     if(!stackRemovedPiece.isEmpty()){
-                        System.out.printf("APPARENTLY STACK REMOVED PIECE IS NOT EMPTY: " + stackRemovedPiece);
                         getAnchorPane().getChildren().remove(stackRemovedPiece.pop().getPieceImage());
                     }
                     startPoint.copyPoint(newPoint);
@@ -164,7 +163,6 @@ public abstract class Piece extends GridBase{
         if(isValidMove()){
             copyCharBoard(charBoard, previousCharBoard);
             if(canCapture()) {
-                System.out.println("ENTER CAPTURE...");
                 stackRemovedPiece.push(capture());
             }
             makeMove();
@@ -211,7 +209,6 @@ public abstract class Piece extends GridBase{
 
     private void addDeletedPieceBack() {
         if (!stackRemovedPiece.isEmpty()) {
-            System.out.println("Stack with removed pieces: " + stackRemovedPiece); //[null]
             Piece lastRemoved = stackRemovedPiece.pop();
             if (Character.isUpperCase(lastRemoved.getPieceChar()))
                 playerWhitePieces.add(lastRemoved);
@@ -305,7 +302,6 @@ public abstract class Piece extends GridBase{
                 }
             }
         }
-        System.out.println("NO SUCH PIECE IN PLAYERPIECES!!!!!");
         return null;
     }
     public Piece capture(Point point){
@@ -329,7 +325,6 @@ public abstract class Piece extends GridBase{
                 }
             }
         }
-        System.out.println("NO SUCH PIECE IN PLAYERPIECES!!!!!");
         return null;
     }
 
@@ -345,7 +340,8 @@ public abstract class Piece extends GridBase{
                 startPoint.getY() + startPoint.getX() == newPoint.getX() + newPoint.getY());
     }
     public boolean isNotBlocked(){
-        //vertical
+        System.out.println(this);
+        //horizontal
         if(startPoint.getY() == newPoint.getY()){
             if(startPoint.getX() < newPoint.getX()) {
                 for (int i = startPoint.getX() + 1; i < newPoint.getX(); i++)
@@ -355,10 +351,10 @@ public abstract class Piece extends GridBase{
                 for (int j = newPoint.getX() + 1; j < startPoint.getX(); j++)
                     if (charBoard[j][startPoint.getY()] != '.') return false;
             }
-        } //horizontal
+        } //vertical
         else if(startPoint.getX() == newPoint.getX()){
             if(startPoint.getY() < newPoint.getY()) {
-                for (int i = startPoint.getX() + 1; i < newPoint.getY(); i++)
+                for (int i = startPoint.getY() + 1; i < newPoint.getY(); i++)
                     if (charBoard[startPoint.getX()][i] != '.') return false;
             }
             else {
