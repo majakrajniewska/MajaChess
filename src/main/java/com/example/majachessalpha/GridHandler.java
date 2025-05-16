@@ -24,5 +24,7 @@ public class GridHandler extends GridBase {
             getAnchorPane().getChildren().add(rectangle);
         }
     }
+
+    //RETURN RECTANGLES BOARD TO MAKE SELECTED COLORS 
 }
 

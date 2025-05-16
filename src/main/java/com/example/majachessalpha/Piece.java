@@ -7,7 +7,6 @@ import javafx.scene.layout.AnchorPane;
 
 import java.net.URL;
 import java.util.*;
-//UNPASSANT DZIALA TYLKO CZARNY W LEWO I NIE USUWA BIALEGO PIONKA
 public abstract class Piece extends GridBase{
     //PIECE
     private boolean color;
@@ -17,12 +16,13 @@ public abstract class Piece extends GridBase{
     double mouseAnchorX;
     double mouseAnchorY;
     //coordinates from which piece starts its move
-    private Point startPoint;
+    private final Point startPoint;
     //coordinates where piece ends its move (if its possible)
-    private Point newPoint;
+    private final Point newPoint;
 
     //saving last removed piece
     Deque<Piece> stackRemovedPiece = new LinkedList<>();
+
     static Point whiteKingPoint;
     static Point blackKingPoint;
 
@@ -44,7 +44,7 @@ public abstract class Piece extends GridBase{
         if(blackKingPoint == null) blackKingPoint = getBlackKingPoint();
 
         startPoint = new Point();
-        newPoint = new Point();
+        newPoint = new Point(-1, -1);
     }
 
     public Piece(boolean color, AnchorPane pane){
@@ -57,7 +57,7 @@ public abstract class Piece extends GridBase{
         this.color = color;
 
         startPoint = new Point();
-        newPoint = new Point();
+        newPoint = new Point(-1, -1);
     }
 
     public String toString(){
@@ -102,6 +102,7 @@ public abstract class Piece extends GridBase{
             //board[x/80][y/80]
             startPoint.setX((int) ((mouseAnchorX/getGridSize()) % BOARD_WIDTH));
             startPoint.setY((int) ((mouseAnchorY/getGridSize()) % BOARD_LENGTH));
+
         });
         //set new coordinates
         pieceImageView.setOnMouseDragged(mouseEvent -> {
@@ -120,25 +121,29 @@ public abstract class Piece extends GridBase{
             //if move is valid - make move
             if(isPlayerTurn()){
                 if(canCastle()){
-                    Move move = new Move(getCurrentPiece(getPieceChar()), startPoint, newPoint);
+                    Move move = new Move(getCurrentPiece(getPieceChar()), new Point(startPoint), new Point(newPoint));
                     historyOfMoves.add(move);
                     //Console visualisation
                     printBoard(charBoard);
                     printHistoryOfMoves();
                     setImageSquare(pieceImageView, newPoint);
                     castle();
+                    startPoint.copyPoint(newPoint);
+                    //CORRECT ROOK'S NEW POINT!!!
                     if(isMate()) mate();
                     nextPlayersTurn();
                 }
                 else if(isValidMoveWithCheck()){
-                    Move move = new Move(getCurrentPiece(getPieceChar()), startPoint, newPoint);
+                    Move move = new Move(getCurrentPiece(getPieceChar()), new Point(startPoint), new Point(newPoint));
                     historyOfMoves.add(move);
                     //Console visualisation
                     printBoard(charBoard);
                     printHistoryOfMoves();
                     if(!stackRemovedPiece.isEmpty()){
+                        //GLITCH WHEN CAPTURING WHITE H ROOK
                         getAnchorPane().getChildren().remove(stackRemovedPiece.pop().getPieceImage());
                     }
+                    startPoint.copyPoint(newPoint);
                     if(isMate()) mate();
                     nextPlayersTurn();
                 }else {
@@ -160,8 +165,10 @@ public abstract class Piece extends GridBase{
     public boolean isValidMoveWithCheck(){
         if(isValidMove()){
             copyCharBoard(charBoard, previousCharBoard);
-            if(canCapture())
+            if(canCapture()) {
+                System.out.println("CAN CAPTURE " + pieceChar);
                 stackRemovedPiece.push(capture());
+            }
             makeMove();
 
             if(isCheck(previousCharBoard)) {
@@ -179,8 +186,9 @@ public abstract class Piece extends GridBase{
     //use only while generating moves, not when making them
     public boolean isValidMoveWithCheck(Point point){
         copyCharBoard(charBoard, previousCharBoard);
-        if(canCapture(point))
+        if(canCapture(point)) {
             stackRemovedPiece.push(capture(point));
+        }
         makeMove(point);
 
         //save current king coordinate and change them if needed
@@ -195,28 +203,12 @@ public abstract class Piece extends GridBase{
         addDeletedPieceBack();
         switchKingPoint(tempKingPoint);
         copyCharBoard(previousCharBoard, charBoard);
+        stackRemovedPiece.clear();
         return true;
     }
     public boolean isValidMoveWithCheck(int x, int y){
         Point point = new Point(x, y);
-        copyCharBoard(charBoard, previousCharBoard);
-        if(canCapture(point))
-            stackRemovedPiece.push(capture(point));
-        makeMove(point);
-
-        //save current king coordinate and change them if needed
-        Point tempKingPoint = switchAndSaveKingCoordinates(point);
-
-        if(isCheck(previousCharBoard)) {
-            addDeletedPieceBack();
-            switchKingPoint(tempKingPoint);
-            copyCharBoard(previousCharBoard, charBoard);
-            return false;
-        }
-        addDeletedPieceBack();
-        switchKingPoint(tempKingPoint);
-        copyCharBoard(previousCharBoard, charBoard);
-        return true;
+        return isValidMoveWithCheck(point);
     }
 
     private void addDeletedPieceBack() {
@@ -298,7 +290,7 @@ public abstract class Piece extends GridBase{
         if(Character.isUpperCase(previousCharBoard[startPoint.getX()][startPoint.getY()]) &&
             Character.isLowerCase(previousCharBoard[newPoint.getX()][newPoint.getY()])){
             for(Piece piece : playerBlackPieces){
-                if(piece.newPoint.getX() == newPoint.getX() && piece.newPoint.getY() == newPoint.getY()){
+                if(piece.startPoint.getX() == newPoint.getX() && piece.startPoint.getY() == newPoint.getY()){
                     playerBlackPieces.remove(piece);
                     return piece;
                 }
@@ -307,7 +299,7 @@ public abstract class Piece extends GridBase{
         else if(Character.isLowerCase(previousCharBoard[startPoint.getX()][startPoint.getY()]) &&
             Character.isUpperCase(previousCharBoard[newPoint.getX()][newPoint.getY()])){
             for(Piece piece : playerWhitePieces){
-                if(piece.newPoint.getX() == newPoint.getX() && piece.newPoint.getY() == newPoint.getY()){
+                if(piece.startPoint.getX() == newPoint.getX() && piece.startPoint.getY() == newPoint.getY()){
                     playerWhitePieces.remove(piece);
                     return piece;
                 }
@@ -325,6 +317,7 @@ public abstract class Piece extends GridBase{
                 }
             }
         }
+
         else if(Character.isLowerCase(charBoard[startPoint.getX()][startPoint.getY()]) &&
                 Character.isUpperCase(charBoard[point.getX()][point.getY()])){
             for(Piece piece : playerWhitePieces){
@@ -349,7 +342,7 @@ public abstract class Piece extends GridBase{
                 startPoint.getY() + startPoint.getX() == newPoint.getX() + newPoint.getY());
     }
     public boolean isNotBlocked(){
-        //vertical
+        //horizontal
         if(startPoint.getY() == newPoint.getY()){
             if(startPoint.getX() < newPoint.getX()) {
                 for (int i = startPoint.getX() + 1; i < newPoint.getX(); i++)
@@ -359,10 +352,10 @@ public abstract class Piece extends GridBase{
                 for (int j = newPoint.getX() + 1; j < startPoint.getX(); j++)
                     if (charBoard[j][startPoint.getY()] != '.') return false;
             }
-        } //horizontal
+        } //vertical
         else if(startPoint.getX() == newPoint.getX()){
             if(startPoint.getY() < newPoint.getY()) {
-                for (int i = startPoint.getX() + 1; i < newPoint.getY(); i++)
+                for (int i = startPoint.getY() + 1; i < newPoint.getY(); i++)
                     if (charBoard[startPoint.getX()][i] != '.') return false;
             }
             else {
@@ -428,7 +421,6 @@ public abstract class Piece extends GridBase{
                 Character.isUpperCase(charBoard[point.getX()][point.getY()])));
     }
 
-
     //GENERATING LEGAL MOVES
     public boolean isValidSquare(Point point){
         return point.getX() >= 0 && point.getX() <= 7 && point.getY() >= 0 && point.getY() <= 7;
@@ -485,6 +477,7 @@ public abstract class Piece extends GridBase{
     public boolean isMate(){
         if(whitePiece()){
             for(Piece p : playerBlackPieces){
+
                 if(!(p.generateLegalMovesWithCheck().isEmpty())){
                     return false;
                 }
@@ -581,8 +574,10 @@ public abstract class Piece extends GridBase{
         return null;
     }
     public static void printHistoryOfMoves(){
+        System.out.println("************************");
         for(Move move : historyOfMoves){
             System.out.println(move.toString());
         }
+        System.out.println("************************");
     }
 }
