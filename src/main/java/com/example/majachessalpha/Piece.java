@@ -103,7 +103,6 @@ public abstract class Piece extends GridBase{
             startPoint.setX((int) ((mouseAnchorX/getGridSize()) % BOARD_WIDTH));
             startPoint.setY((int) ((mouseAnchorY/getGridSize()) % BOARD_LENGTH));
 
-            //System.out.println(generateLegalMoves());
         });
         //set new coordinates
         pieceImageView.setOnMouseDragged(mouseEvent -> {
@@ -141,6 +140,7 @@ public abstract class Piece extends GridBase{
                     printBoard(charBoard);
                     printHistoryOfMoves();
                     if(!stackRemovedPiece.isEmpty()){
+                        //GLITCH WHEN CAPTURING WHITE H ROOK
                         getAnchorPane().getChildren().remove(stackRemovedPiece.pop().getPieceImage());
                     }
                     startPoint.copyPoint(newPoint);
