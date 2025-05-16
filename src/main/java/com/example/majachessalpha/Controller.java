@@ -10,7 +10,7 @@ import java.util.ResourceBundle;
 
 public class Controller implements Initializable{
 
-    private String FEN = "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R";
+    private String FEN = "r2qk2r/8/8/8/8/8/8/R2QK2R";
 
     private GridHandler backgroundGridHandler;
     private PositionHandler positionHandler;
