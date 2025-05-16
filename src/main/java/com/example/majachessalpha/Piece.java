@@ -44,7 +44,7 @@ public abstract class Piece extends GridBase{
         if(blackKingPoint == null) blackKingPoint = getBlackKingPoint();
 
         startPoint = new Point();
-        newPoint = new Point();
+        newPoint = new Point(-1, -1);
     }
 
     public Piece(boolean color, AnchorPane pane){
@@ -57,7 +57,7 @@ public abstract class Piece extends GridBase{
         this.color = color;
 
         startPoint = new Point();
-        newPoint = new Point();
+        newPoint = new Point(-1, -1);
     }
 
     public String toString(){
@@ -102,6 +102,8 @@ public abstract class Piece extends GridBase{
             //board[x/80][y/80]
             startPoint.setX((int) ((mouseAnchorX/getGridSize()) % BOARD_WIDTH));
             startPoint.setY((int) ((mouseAnchorY/getGridSize()) % BOARD_LENGTH));
+
+            //System.out.println(generateLegalMoves());
         });
         //set new coordinates
         pieceImageView.setOnMouseDragged(mouseEvent -> {
@@ -128,6 +130,7 @@ public abstract class Piece extends GridBase{
                     setImageSquare(pieceImageView, newPoint);
                     castle();
                     startPoint.copyPoint(newPoint);
+                    //CORRECT ROOK'S NEW POINT!!!
                     if(isMate()) mate();
                     nextPlayersTurn();
                 }
@@ -163,6 +166,7 @@ public abstract class Piece extends GridBase{
         if(isValidMove()){
             copyCharBoard(charBoard, previousCharBoard);
             if(canCapture()) {
+                System.out.println("CAN CAPTURE " + pieceChar);
                 stackRemovedPiece.push(capture());
             }
             makeMove();
@@ -285,7 +289,6 @@ public abstract class Piece extends GridBase{
     public Piece capture(){ //start, current
         if(Character.isUpperCase(previousCharBoard[startPoint.getX()][startPoint.getY()]) &&
             Character.isLowerCase(previousCharBoard[newPoint.getX()][newPoint.getY()])){
-            System.out.println(playerBlackPieces);
             for(Piece piece : playerBlackPieces){
                 if(piece.startPoint.getX() == newPoint.getX() && piece.startPoint.getY() == newPoint.getY()){
                     playerBlackPieces.remove(piece);
@@ -318,7 +321,6 @@ public abstract class Piece extends GridBase{
         else if(Character.isLowerCase(charBoard[startPoint.getX()][startPoint.getY()]) &&
                 Character.isUpperCase(charBoard[point.getX()][point.getY()])){
             for(Piece piece : playerWhitePieces){
-                System.out.println(piece);
                 if(piece.startPoint.getX() == point.getX() && piece.startPoint.getY() == point.getY()){
                     playerWhitePieces.remove(piece);
                     return piece;
@@ -340,7 +342,6 @@ public abstract class Piece extends GridBase{
                 startPoint.getY() + startPoint.getX() == newPoint.getX() + newPoint.getY());
     }
     public boolean isNotBlocked(){
-        System.out.println(this);
         //horizontal
         if(startPoint.getY() == newPoint.getY()){
             if(startPoint.getX() < newPoint.getX()) {
@@ -408,7 +409,6 @@ public abstract class Piece extends GridBase{
                 Character.isLowerCase(charBoard[newPoint.getX()][newPoint.getY()])));
     }
     public boolean canCapture(){
-        System.out.println("\t" + charBoard[startPoint.getX()][startPoint.getY()] + "\t" + charBoard[newPoint.getX()][newPoint.getY()]);
         return ((Character.isUpperCase(charBoard[startPoint.getX()][startPoint.getY()]) &&
                 Character.isLowerCase(charBoard[newPoint.getX()][newPoint.getY()])) ||
                 (Character.isLowerCase(charBoard[startPoint.getX()][startPoint.getY()]) &&
@@ -574,8 +574,10 @@ public abstract class Piece extends GridBase{
         return null;
     }
     public static void printHistoryOfMoves(){
+        System.out.println("************************");
         for(Move move : historyOfMoves){
             System.out.println(move.toString());
         }
+        System.out.println("************************");
     }
 }

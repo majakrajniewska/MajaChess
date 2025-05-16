@@ -9,6 +9,11 @@ import java.util.List;
 public class Queen extends Piece{
     private Image pieceImage;
     private ImageView pieceImageView;
+    private int[][] directions = {
+            {-1, 0}, {1, 0}, {0, -1}, {0, 1},  // Horizontal and vertical
+            {-1, -1}, {-1, 1}, {1, -1}, {1, 1}  // Diagonals
+    };
+
     public Queen(boolean color, AnchorPane pane){
         super(color, pane);
         setValue(9);
@@ -38,11 +43,6 @@ public class Queen extends Piece{
     public List<Point> generateLegalMoves() {
         legalMoves.clear();
 
-        int[][] directions = {
-                {-1, 0}, {1, 0}, {0, -1}, {0, 1},  // Horizontal and vertical
-                {-1, -1}, {-1, 1}, {1, -1}, {1, 1}  // Diagonals
-        };
-
         for (int[] direction : directions) {
             int dx = direction[0];
             int dy = direction[1];
@@ -70,11 +70,6 @@ public class Queen extends Piece{
     @Override
     public List<Point> generateLegalMovesWithCheck() {
         legalMoves.clear();
-
-        int[][] directions = {
-                {-1, 0}, {1, 0}, {0, -1}, {0, 1},  // Horizontal and vertical
-                {-1, -1}, {-1, 1}, {1, -1}, {1, 1}  // Diagonals
-        };
 
         for (int[] direction : directions) {
             int dx = direction[0];
