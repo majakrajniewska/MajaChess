@@ -1,9 +1,11 @@
 package com.example.majachessalpha;
-
+import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.*;
@@ -140,8 +142,13 @@ public abstract class Piece extends GridBase{
                     printBoard(charBoard);
                     printHistoryOfMoves();
                     if(!stackRemovedPiece.isEmpty()){
-                        //GLITCH WHEN CAPTURING WHITE H ROOK
-                        getAnchorPane().getChildren().remove(stackRemovedPiece.pop().getPieceImage());
+                        Piece finalCaptured = stackRemovedPiece.pop();
+                        Platform.runLater(() -> {
+                            finalCaptured.getPieceImage().setVisible(false);
+                            PauseTransition pause = new PauseTransition(Duration.millis(50));
+                            pause.setOnFinished(e -> getAnchorPane().getChildren().remove(finalCaptured.getPieceImage()));
+                            pause.play();
+                        });
                     }
                     startPoint.copyPoint(newPoint);
                     if(isMate()) mate();
