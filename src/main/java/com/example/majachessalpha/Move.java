@@ -23,7 +23,15 @@ public class Move {
         return newPoint;
     }
 
-    public String toString(){
+    public String toString() {
         return "PIECE: " + piece.getPieceChar() + "; START: " + startPoint.toString() + "; END: " + newPoint.toString();
+    }
+
+    public boolean isCastle() {
+        return ((piece.getPieceChar() == 'k' || piece.getPieceChar() == 'K')&&(Math.abs(startPoint.getX() - newPoint.getX()) == 2));
+    }
+
+    public boolean isPawnPromote() {
+        return ((piece.getPieceChar() == 'p' && newPoint.getY() == 7) || (piece.getPieceChar() == 'P')&&(newPoint.getY() == 0));
     }
 }

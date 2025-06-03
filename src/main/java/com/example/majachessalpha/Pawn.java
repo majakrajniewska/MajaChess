@@ -37,14 +37,14 @@ public class Pawn extends Piece {
     public boolean isValidMove(){
         //allowing to go 2 squares in the first move
         if(isFirstMove()){
-            if(isHorizontal() && Math.abs(getStartPoint().getY() - getNewPoint().getY()) == 2 && isNotBlocked()){
+            if(isVertical() && Math.abs(getStartPoint().getY() - getNewPoint().getY()) == 2 && isNotBlocked()){
                 return true;
             }
         }
         //allowing to go one square or capture another piece
         if(whitePiece()){
             //Normal move
-            if(getNewPoint().getY() == getStartPoint().getY()-1 && isHorizontal() && isSquareEmpty(getNewPoint().getX(), getNewPoint().getY())){
+            if(getNewPoint().getY() == getStartPoint().getY()-1 && isVertical() && isSquareEmpty(getNewPoint().getX(), getNewPoint().getY())){
                 return true;
             }
 
@@ -59,7 +59,7 @@ public class Pawn extends Piece {
 
         } else {
             //Normal move
-            if(getNewPoint().getY() == getStartPoint().getY() + 1 && isHorizontal() && isSquareEmpty(getNewPoint())){
+            if(getNewPoint().getY() == getStartPoint().getY() + 1 && isVertical() && isSquareEmpty(getNewPoint())){
                 return true;
             }
 

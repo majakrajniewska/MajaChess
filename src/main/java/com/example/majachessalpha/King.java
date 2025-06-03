@@ -120,9 +120,11 @@ public class King extends Piece{
                 //player black
                 if(getStartPoint().getY() == 0){
                     for(Rook rook : getPlayerBlackRooks()){
+                        if(rook.getStartPoint().getX() == getStartPoint().getX()+3) {
                             return rook.isFirstMove() &&
-                                !isPieceBetweenRookAndKing(getStartPoint().getX()+3) &&
-                                !isCheckWhileCastle();
+                                    !isPieceBetweenRookAndKing(getStartPoint().getX()+3) &&
+                                    !isCheckWhileCastle();
+                        }
                     }
                 }
                 //player white

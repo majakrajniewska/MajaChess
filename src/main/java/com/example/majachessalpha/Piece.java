@@ -121,41 +121,29 @@ public abstract class Piece extends GridBase{
         //validate new coordinates
         pieceImageView.setOnMouseReleased(mouseEvent -> {
             //if move is valid - make move
-            if(isPlayerTurn()){
-                if(canCastle()){
-                    Move move = new Move(getCurrentPiece(getPieceChar()), new Point(startPoint), new Point(newPoint));
-                    historyOfMoves.add(move);
-                    //Console visualisation
-                    printBoard(charBoard);
-                    printHistoryOfMoves();
-                    setImageSquare(pieceImageView, newPoint);
+            if(isPlayerTurn() && isValidMoveWithCheck()) {
+                Move move = new Move(this, new Point(startPoint), new Point(newPoint));
+                historyOfMoves.add(move);
+                printBoard(charBoard);
+                printHistoryOfMoves();
+                if(move.isCastle()) {
                     castle();
-                    startPoint.copyPoint(newPoint);
-                    //CORRECT ROOK'S NEW POINT!!!
-                    if(isMate()) mate();
-                    nextPlayersTurn();
                 }
-                else if(isValidMoveWithCheck()){
-                    Move move = new Move(getCurrentPiece(getPieceChar()), new Point(startPoint), new Point(newPoint));
-                    historyOfMoves.add(move);
-                    //Console visualisation
-                    printBoard(charBoard);
-                    printHistoryOfMoves();
-                    if(!stackRemovedPiece.isEmpty()){
-                        Piece finalCaptured = stackRemovedPiece.pop();
-                        Platform.runLater(() -> {
-                            finalCaptured.getPieceImage().setVisible(false);
-                            PauseTransition pause = new PauseTransition(Duration.millis(50));
-                            pause.setOnFinished(e -> getAnchorPane().getChildren().remove(finalCaptured.getPieceImage()));
-                            pause.play();
-                        });
-                    }
-                    startPoint.copyPoint(newPoint);
-                    if(isMate()) mate();
-                    nextPlayersTurn();
-                }else {
-                    setImageSquare(pieceImageView, startPoint);
+                else if(move.isPawnPromote()) {
+                    //To Do!
                 }
+                if(!stackRemovedPiece.isEmpty()){
+                    Piece finalCaptured = stackRemovedPiece.pop();
+                    Platform.runLater(() -> {
+                        finalCaptured.getPieceImage().setVisible(false);
+                        PauseTransition pause = new PauseTransition(Duration.millis(50));
+                        pause.setOnFinished(e -> getAnchorPane().getChildren().remove(finalCaptured.getPieceImage()));
+                        pause.play();
+                    });
+                }
+                startPoint.copyPoint(newPoint);
+                if(isMate()) mate();
+                nextPlayersTurn();
             }
             else {
                 setImageSquare(pieceImageView, startPoint);
@@ -277,20 +265,6 @@ public abstract class Piece extends GridBase{
         img.setLayoutY(point.getY() * getGridSize() - img.getY());
     }
     public abstract ImageView getPieceImage();
-    public Piece getCurrentPiece(char pieceChar){
-        if(whitePiece()){
-            for(Piece piece : playerWhitePieces){
-                if(piece.getPieceChar() == pieceChar)
-                    return piece;
-            }
-        } else{
-            for(Piece piece : playerBlackPieces){
-                if(piece.getPieceChar() == pieceChar)
-                    return piece;
-            }
-        }
-        return null;
-    }
 
     //remove instance of Piece from Player
     public Piece capture(){ //start, current
@@ -339,71 +313,54 @@ public abstract class Piece extends GridBase{
 
     //MOVEMENT VALIDATION - MOVE TO MOVE
     public boolean isHorizontal(){
-        return startPoint.getY() != newPoint.getY() && startPoint.getX() == newPoint.getX();
+        return startPoint.getY() == newPoint.getY() && startPoint.getX() != newPoint.getX();
     }
     public boolean isVertical(){
-        return startPoint.getY() == newPoint.getY() && startPoint.getX() != newPoint.getX();
+        return startPoint.getY() != newPoint.getY() && startPoint.getX() == newPoint.getX();
     }
     public boolean isDiagonal(){
         return (startPoint.getX() - startPoint.getY() == newPoint.getX() - newPoint.getY() ||
                 startPoint.getY() + startPoint.getX() == newPoint.getX() + newPoint.getY());
     }
+
+    public boolean isPieceInPatternArea(int xVector, int yVector) {
+        for(int x = startPoint.getX() + xVector, y = startPoint.getY() + yVector; x != newPoint.getX() || y != newPoint.getY(); x += xVector, y+= yVector) {
+            if (charBoard[x][y] != '.') return true;
+        }
+        return false;
+    }
     public boolean isNotBlocked(){
         //horizontal
-        if(startPoint.getY() == newPoint.getY()){
+        if(isHorizontal()){
             if(startPoint.getX() < newPoint.getX()) {
-                for (int i = startPoint.getX() + 1; i < newPoint.getX(); i++)
-                    if (charBoard[i][startPoint.getY()] != '.') return false;
+                if(isPieceInPatternArea(1,0)) return false;
             }
             else {
-                for (int j = newPoint.getX() + 1; j < startPoint.getX(); j++)
-                    if (charBoard[j][startPoint.getY()] != '.') return false;
+                if(isPieceInPatternArea(-1,0)) return false;
             }
         } //vertical
-        else if(startPoint.getX() == newPoint.getX()){
+        else if(isVertical()){
             if(startPoint.getY() < newPoint.getY()) {
-                for (int i = startPoint.getY() + 1; i < newPoint.getY(); i++)
-                    if (charBoard[startPoint.getX()][i] != '.') return false;
+                if(isPieceInPatternArea(0,1)) return false;
             }
             else {
-                for (int j = newPoint.getY() + 1; j < startPoint.getY(); j++)
-                    if (charBoard[startPoint.getX()][j] != '.') return false;
+                if(isPieceInPatternArea(0,-1)) return false;
             }
         } // diagonal
         else if(startPoint.getX() - startPoint.getY() == newPoint.getX() - newPoint.getY()){
             if(startPoint.getY() < newPoint.getY()) {
-                int tempX = startPoint.getX() + 1, tempY = startPoint.getY() + 1;
-                while (tempX!= newPoint.getX()){
-                    if (charBoard[tempX][tempY] != '.') return false;
-                    tempX++;
-                    tempY++;
-                }
+                if(isPieceInPatternArea(1,1)) return false;
             }
             else {
-                int tempX = startPoint.getX() - 1, tempY = startPoint.getY() - 1;
-                while (tempX!= newPoint.getX()){
-                    if (charBoard[tempX][tempY] != '.') return false;
-                    tempX--;
-                    tempY--;
-                }
+                if(isPieceInPatternArea(-1,-1)) return false;
             }
         } //second diagonal
         else if(startPoint.getX() + startPoint.getY() == newPoint.getX() + newPoint.getY()){
             if(startPoint.getY() < newPoint.getY()) {
-                int tempX = startPoint.getX()-1, tempY = startPoint.getY()+1;
-                while (tempX!= newPoint.getX()){
-                    if (charBoard[tempX][tempY] != '.') return false;
-                    tempX--;
-                    tempY++;
-                }
+                if(isPieceInPatternArea(-1,1)) return false;
             }
             else {
-                int tempX = startPoint.getX()+1, tempY = startPoint.getY()-1;
-                while (tempX!= newPoint.getX()){
-                    if (charBoard[tempX][tempY] != '.') return false;
-                    tempX++;
-                    tempY--;
-                }
+                if(isPieceInPatternArea(1,-1)) return false;
             }
         }
         //check if piece is trying to stand on the square with piece with the same color
@@ -416,10 +373,7 @@ public abstract class Piece extends GridBase{
                 Character.isLowerCase(charBoard[newPoint.getX()][newPoint.getY()])));
     }
     public boolean canCapture(){
-        return ((Character.isUpperCase(charBoard[startPoint.getX()][startPoint.getY()]) &&
-                Character.isLowerCase(charBoard[newPoint.getX()][newPoint.getY()])) ||
-                (Character.isLowerCase(charBoard[startPoint.getX()][startPoint.getY()]) &&
-                Character.isUpperCase(charBoard[newPoint.getX()][newPoint.getY()])));
+        return canCapture(newPoint);
     }
     public boolean canCapture(Point point){
         return ((Character.isUpperCase(charBoard[startPoint.getX()][startPoint.getY()]) &&
