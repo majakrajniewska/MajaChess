@@ -266,49 +266,29 @@ public abstract class Piece extends GridBase{
     }
     public abstract ImageView getPieceImage();
 
-    //remove instance of Piece from Player
-    public Piece capture(){ //start, current
-        if(Character.isUpperCase(previousCharBoard[startPoint.getX()][startPoint.getY()]) &&
-            Character.isLowerCase(previousCharBoard[newPoint.getX()][newPoint.getY()])){
-            for(Piece piece : playerBlackPieces){
-                if(piece.startPoint.getX() == newPoint.getX() && piece.startPoint.getY() == newPoint.getY()){
-                    playerBlackPieces.remove(piece);
-                    return piece;
-                }
-            }
+    //Removes Piece if it's a valid capture of selected point from the board
+    public Piece capture(Point point){
+        List<Piece> searchList = null;
+        if(whitePiece() && Character.isLowerCase(charBoard[point.getX()][point.getY()])){
+            searchList = playerBlackPieces;
         }
-        else if(Character.isLowerCase(previousCharBoard[startPoint.getX()][startPoint.getY()]) &&
-            Character.isUpperCase(previousCharBoard[newPoint.getX()][newPoint.getY()])){
-            for(Piece piece : playerWhitePieces){
-                if(piece.startPoint.getX() == newPoint.getX() && piece.startPoint.getY() == newPoint.getY()){
-                    playerWhitePieces.remove(piece);
+        else if((!whitePiece()) && Character.isUpperCase(charBoard[point.getX()][point.getY()])){
+            searchList = playerWhitePieces;
+        }
+        if(searchList != null) {
+            Iterator<Piece> iterator = searchList.iterator();
+            while (iterator.hasNext()) {
+                Piece piece = iterator.next();
+                if (piece.startPoint.getX() == point.getX() && piece.startPoint.getY() == point.getY()) {
+                    iterator.remove();
                     return piece;
                 }
             }
         }
         return null;
     }
-    public Piece capture(Point point){
-        if(Character.isUpperCase(charBoard[startPoint.getX()][startPoint.getY()]) &&
-            Character.isLowerCase(charBoard[point.getX()][point.getY()])){
-            for(Piece piece : playerBlackPieces){
-                if(piece.startPoint.getX() == point.getX() && piece.startPoint.getY() == point.getY()){
-                    playerBlackPieces.remove(piece);
-                    return piece;
-                }
-            }
-        }
-
-        else if(Character.isLowerCase(charBoard[startPoint.getX()][startPoint.getY()]) &&
-                Character.isUpperCase(charBoard[point.getX()][point.getY()])){
-            for(Piece piece : playerWhitePieces){
-                if(piece.startPoint.getX() == point.getX() && piece.startPoint.getY() == point.getY()){
-                    playerWhitePieces.remove(piece);
-                    return piece;
-                }
-            }
-        }
-        return null;
+    public Piece capture(){ //start, current
+        return capture(newPoint);
     }
 
     //MOVEMENT VALIDATION - MOVE TO MOVE
